@@ -1,0 +1,114 @@
+Gasaran, Sumpyo, TopPart, TitlePartFrame, NonTitlePart,
+QLabel#yeobaek_sumpyo, QLabel#sumpyo_up, QLabel#sumpyo_down, QLabel#sigimsae,
+QLabel#top_left, QLabel#top_right, QLabel#bottom_left, QLabel#bottom_right {
+    background-color: #BAB597;
+    font-size: 18pt;
+    font-family: NaNumGothic;
+    border: 1px solid #6B6B09;
+    border-top: 0px;
+    text-align: center;
+
+    padding: 0px;
+    margin: 0px;
+}
+
+QLabel#yeobaek_sumpyo, QLabel#sumpyo_up, QLabel#sumpyo_down, QLabel#top_left, QLabel#top_right, QLabel#bottom_left, QLabel#bottom_right {
+    border-bottom: 0px;
+}
+
+QLabel#yeobaek_sumpyo, QLabel#sumpyo_up, QLabel#sumpyo_down {
+    border-right: 0px;
+}
+
+QLabel#sigimsae {
+    border: 0px;
+    border-right: 1px solid #6B6B09;
+}
+
+
+QLabel#top_left, QLabel#top_right {
+    border-bottom: 1px solid #6B6B09;
+    border-left, border-right: 0px;
+}
+
+
+Gasaran {
+    font-size: 10pt;
+    text-indent: 0px;
+    padding: 0px;
+    margin: 0px;
+}
+
+TitlePartFrame, NonTitlePart {
+    border: 1px solid #6B6B09;
+    border-left: 0px;
+}
+
+TopPart {
+    border: 1px solid #6B6B09;
+    border-right: 0px;
+}
+
+TitlePart:left {
+    font-size: 14pt;
+    font-family: NaNumGothic;
+}
+
+TitlePart:right {
+    font-size: 24pt;
+    font-family: NaNumGothic;
+}
+
+TitlePart:left_margin {
+    background-color: #BAB597;
+}
+
+TitlePart:right_margin {
+    background-color: #BAB597;
+}
+
+TitlePart:top_margin {
+    background-color: #BAB597;
+}
+
+TitlePart:bottom_margin {
+    background-color: #BAB597;
+}
+
+Kan {
+    background-color: #BAB597;
+    font-family: NaNumGothic;
+    border: 1px solid #BAB597;
+    text-align: center;
+
+    padding-top: 0px;
+    padding-bottom: 1px;
+    padding-left: 0px;
+    padding-right: 0px;
+    margin: 0px;
+    margin-left: -1px;
+    margin-right: -1px;
+}
+
+Kan:clicked {
+    background-color: #BAB597;
+    font-family: NaNumGothic;
+    border: 2px solid black;
+    text-align: center;
+
+    padding-top: 0px;
+    padding-bottom: 1px;
+    padding-left: 0px;
+    padding-right: 0px;
+    margin: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+Kan:first {
+
+}
+
+Kan:last {
+    border-bottom: 1px solid #6B6B09;
+}

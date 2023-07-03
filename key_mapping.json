@@ -1,0 +1,38 @@
+{
+  "HWANG": ["1"],
+  "TAE": ["2"],
+  "JUNG": ["3"],
+  "IM": ["4"],
+  "MU": ["5"],
+
+  "DAE": ["Ctrl+1", "Alt+2"],
+  "HYEOP": ["Ctrl+2"],
+  "GO": ["Alt+3"],
+  "YU": ["Ctrl+3", "Alt+4"],
+  "YI": ["Ctrl+4"],
+  "NAM": ["Alt+5"],
+  "EUNG": ["Ctrl+5", "Alt+1"],
+
+  "REST": ["Space"],
+  "CONTINUOUS": ["-", "r"],
+
+  "MOVE_LEFT": ["Left", "a"],
+  "MOVE_RIGHT": ["Right", "d"],
+  "MOVE_UP": ["Up", "w"],
+  "MOVE_DOWN": ["Down", "s"],
+  "MOVE_TO_THE_PREV_JEONGGAN": ["Shift+Return"],
+  "MOVE_TO_THE_NEXT_JEONGGAN": ["Return"],
+
+  "DELETE": ["Delete"],
+  "ERASE": ["Backspace"],
+  "NEWLINE": ["Ctrl+Space"],
+
+  "INSERT_LEFT": ["Ctrl+Left"],
+  "INSERT_RIGHT": ["Ctrl+Right"],
+
+  "OCTAVE_UP": ["`"],
+  "OCTAVE_DOWN": ["~"],
+
+  "PREV_PAGE": ["PgUp"],
+  "NEXT_PAGE": ["PgDown"]
+}
