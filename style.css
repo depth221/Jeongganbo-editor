@@ -1,10 +1,14 @@
-Gasaran, Sumpyo, TopPart, TitlePartFrame, NonTitlePart,
-QLabel#yeobaek_sumpyo, QLabel#sumpyo_up, QLabel#sumpyo_down, QLabel#sigimsae,
-QLabel#top_left, QLabel#top_right, QLabel#bottom_left, QLabel#bottom_right {
+Gasaran, LeftPart, TopPart, BottomPart,
+Sumpyo, Sigimsae, TitlePartFrame, NonTitlePart,
+QLabel#LeftPart0, QLabel#LeftPart1, QLabel#LeftPart2,
+QLabel#sumpyo_up, QLabel#sumpyo_down,
+QLabel#sumpyo_up_for_first, QLabel#sumpyo_down_for_last,
+QLabel#sigimsae, QLabel#sumpyo_yeobaek,
+QLabel#first_top_left, QLabel#first_top_right,
+QLabel#last_bottom_left, QLabel#last_bottom_right, QLabel#last_bottom_right_id0 {
     background-color: #BAB597;
     font-size: 18pt;
     font-family: NaNumGothic;
-    border: 1px solid #6B6B09;
     border-top: 0px;
     text-align: center;
 
@@ -12,41 +16,89 @@ QLabel#top_left, QLabel#top_right, QLabel#bottom_left, QLabel#bottom_right {
     margin: 0px;
 }
 
-QLabel#yeobaek_sumpyo, QLabel#sumpyo_up, QLabel#sumpyo_down, QLabel#top_left, QLabel#top_right, QLabel#bottom_left, QLabel#bottom_right {
-    border-bottom: 0px;
+QLabel#LeftPart0, QLabel#LeftPart1, QLabel#LeftPart2 {
+    border-left: 1px solid #6B6B09;
 }
 
-QLabel#yeobaek_sumpyo, QLabel#sumpyo_up, QLabel#sumpyo_down {
-    border-right: 0px;
+QLabel#LeftPart0 {
+    border-top: 1px solid #6B6B09;
 }
 
-QLabel#sigimsae {
-    border: 0px;
+QLabel#LeftPart1 {
     border-right: 1px solid #6B6B09;
 }
 
-
-QLabel#top_left, QLabel#top_right {
-    border-bottom: 1px solid #6B6B09;
-    border-left, border-right: 0px;
+QLabel#LeftPart2 {
 }
 
-
-Gasaran {
-    font-size: 10pt;
-    text-indent: 0px;
-    padding: 0px;
-    margin: 0px;
+BottomPart {
+    border: 1px solid #6B6B09;
+    border-top: 0px;
 }
 
 TitlePartFrame, NonTitlePart {
     border: 1px solid #6B6B09;
+    border-bottom: 0px;
+}
+
+QLabel#sumpyo_up, QLabel#sumpyo_down, QLabel#sumpyo_yeobaek {
+    border-left: 1px solid #6B6B09;
+}
+
+
+QLabel#last_bottom_right_id0 {
+    border-right: 1px solid #6B6B09;
+}
+
+Sumpyo:up {
+    border-left: 1px solid #6B6B09;
+}
+
+Sumpyo:up+first+bottom_border {
+    border-bottom: 1px solid #6B6B09;
+}
+
+Sumpyo:up+bottom_border {
+    border-left: 1px solid #6B6B09;
+    border-bottom: 1px solid #6B6B09;
+}
+
+Sumpyo:down {
+    border-left: 1px solid #6B6B09;
+}
+
+Sumpyo:down+last {
     border-left: 0px;
 }
 
-TopPart {
+Sigimsae {
+    border-right: 1px solid #6B6B09;
+}
+
+Sigimsae:bottom_border {
+    border-right: 1px solid #6B6B09;
+    border-bottom: 1px solid #6B6B09;
+}
+
+QLabel#first_top_left, QLabel#first_top_right {
+    border-bottom: 1px solid #6B6B09;
+    border-left, border-right: 0px;
+}
+
+NonTitlePart {
     border: 1px solid #6B6B09;
-    border-right: 0px;
+    border-left: 0px;
+    border-bottom: 0px;
+}
+
+TitlePartFrame {
+    border: 0px;
+    border-right: 1px solid #6B6B09;
+    border-top: 1px solid #6B6B09;
+}
+
+TopPart {
+    border-top: 1px solid #6B6B09;
 }
 
 TitlePart:left {
@@ -78,7 +130,7 @@ TitlePart:bottom_margin {
 Kan {
     background-color: #BAB597;
     font-family: NaNumGothic;
-    border: 1px solid #BAB597;
+    border: 0px solid #BAB597;
     text-align: center;
 
     padding-top: 0px;
@@ -86,8 +138,8 @@ Kan {
     padding-left: 0px;
     padding-right: 0px;
     margin: 0px;
-    margin-left: -1px;
-    margin-right: -1px;
+    margin-left: 0px;
+    margin-right: 0px;
 }
 
 Kan:clicked {
