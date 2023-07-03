@@ -1,11 +1,10 @@
 import json
 import re
 
-from PyQt5.QtCore import QMargins
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QToolTip, QStatusBar, QMainWindow, \
     QApplication, QGridLayout, QLabel, QAction, qApp, QDesktopWidget, QDialog, QLineEdit, QFormLayout, QHBoxLayout, \
-    QVBoxLayout, QFrame, QSizePolicy, QStackedLayout, QStackedWidget, QStyle, QGraphicsOpacityEffect, QLayout
-from PyQt5.QtGui import QFont, QIcon, QColor, QPalette, QFontMetrics, QPainter, QTextOption, QPixmap
+    QVBoxLayout, QFrame
+from PyQt5.QtGui import QFont, QIcon, QColor, QPalette, QFontMetrics
 from PyQt5 import QtCore
 
 from pitch_name import PitchName, PitchNamePlus1, PitchNamePlus2, PitchNameMinus1, PitchNameMinus2
@@ -25,8 +24,6 @@ class Page(QWidget):
         self.page_layout = QGridLayout()
         self.setLayout(self.page_layout)
 
-        self.setContentsMargins(0, 0, 0, 0)
-
         self.page_layout.setSpacing(0)
         self.page_layout.setContentsMargins(0, 0, 0, 0)
         self.page_layout.setAlignment(QtCore.Qt.AlignJustify)
@@ -35,17 +32,17 @@ class Page(QWidget):
         self.jeonggan_grid.setSpacing(0)
         self.jeonggan_grid.setContentsMargins(0, 0, 0, 0)
 
+        self.page_layout.addWidget(TopPart(), 0, 0)
+        self.page_layout.addLayout(self.jeonggan_grid, 1, 0)
+        if title is True:
+            self.page_layout.addLayout(TitlePart(), 0, 1, 2, 1)
+        else:
+            self.page_layout.addWidget(NonTitlePart(), 0, 1, 2, 1)
+
         for i in range(gaks - 1, -1, -1):
             tmp_gak = Gak(num=4, _id=gaks - i - 1, parent=self)
             self.jeonggan_grid.addLayout(tmp_gak, 0, i)
             self.gaks_obj.append(tmp_gak)
-
-        self.page_layout.addLayout(self.jeonggan_grid, 1, 0)
-
-        if title is True:
-            self.page_layout.addLayout(TitlePart(), 1, 1)
-        else:
-            self.page_layout.addWidget(NonTitlePart(), 1, 1)
 
     def find_next_gak(self, _id: int):
         if _id == self.gaks - 1:
@@ -76,9 +73,7 @@ class TopPart(QLabel):
         self.set_style()
 
         self.setMargin(0)
-        self.setFixedHeight(70 - 8)
-        self.setFixedWidth(35 + 54)
-        self.setContentsMargins(0, 0, 0, 0)
+        self.setFixedHeight(70)
 
     def set_style(self) -> None:
         if TopPart.css_content is None:
@@ -94,9 +89,6 @@ class NonTitlePart(QLabel):
     def __init__(self, parent=None):
         super().__init__()
         self.parent = parent
-
-        self.setMargin(0)
-        self.setContentsMargins(0, 0, 0, 0)
 
         # subtitle font size
         s_css_style = json_extract(TitlePart.css_content, "TitlePart", "left")
@@ -126,7 +118,7 @@ class NonTitlePart(QLabel):
         t_px_from_pt = t_font_metrics.fontDpi() / 72 * t_font_size
         print(t_px_from_pt)
 
-        self.setFixedWidth(30 + int(s_px_from_pt + t_px_from_pt) + 60 - 35 - 54)
+        self.setFixedWidth(30 + round(s_px_from_pt + t_px_from_pt) + 60 - 35 - 54)
 
         self.set_style()
 
@@ -144,9 +136,6 @@ class TitlePartFrame(QFrame):
         self.parent = parent
 
         self.setFrameShape(QFrame.Box)
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
-        self.setContentsMargins(1, 1, 1, 1)
-        self.setFixedHeight(70 + 66 * 12 + 8)
 
     def mousePressEvent(self, event) -> None:
         position = event.pos()
@@ -185,8 +174,6 @@ class TitlePart(QGridLayout):
 
         self.title_layout = QVBoxLayout()
         self.subtitle_layout = QVBoxLayout()
-        self.title_layout.setContentsMargins(0, 0, 0, 0)
-        self.subtitle_layout.setContentsMargins(0, 0, 0, 0)
         self.gridlayout.addLayout(self.subtitle_layout, 1, 1)
         self.gridlayout.addLayout(self.title_layout, 1, 2)
 
@@ -215,7 +202,6 @@ class TitlePart(QGridLayout):
 
         width_dict = {"left_margin": 30, "right_margin": 60}
         height_dict = {"top_margin": 100, "bottom_margin": 40}
-        font_size = {"left": 14, "right": 24}
 
         if attr in ["left_margin", "right_margin"]:
             css_style = json_extract(TitlePart.css_content, "TitlePart", attr)
@@ -305,103 +291,15 @@ class TitlePart(QGridLayout):
             self.subtitle_layout.insertWidget(i + 1, tmp_label, alignment=QtCore.Qt.AlignVCenter | QtCore.Qt.AlignCenter)
 
 
-class Sumpyo(QLabel):
+class Gasaran(QLabel):
     css_content = None
 
     def __init__(self, beats=1, parent=None):
-        super().__init__()
+        super().__init__(parent)
         self.set_style()
 
         self.setMargin(0)
         self.setFixedWidth(35)
-        self.setContentsMargins(0, 0, 0, 0)
-
-        self.setText("<")
-
-    def set_style(self) -> None:
-        if Sumpyo.css_content is None:
-            with open("style.css", 'r') as f:
-                Sumpyo.css_content = f.read()
-
-        self.setStyleSheet(Sumpyo.css_content)
-        self.setGraphicsEffect(QGraphicsOpacityEffect().setOpacity(1.0))
-
-
-class Gasaran(QHBoxLayout):
-    css_content = None
-
-    def __init__(self, num: int = 1, parent=None):
-        super().__init__()
-        # self.set_style()
-
-        self.setSpacing(0)
-        self.setContentsMargins(0, 0, 0, 0)
-
-        # self.setText("＜")
-        self.elements = [[] for i in range(num)]
-        self.sumpyos = [[] for i in range(num)]
-
-        self.sumpyos_layout = QVBoxLayout()
-        self.sigimsae_layout = QVBoxLayout()
-
-        self.addLayout(self.sumpyos_layout)
-        self.addLayout(self.sigimsae_layout)
-
-        for i in range(num):
-            # sumpyo_down
-            tmp_label = QLabel()
-            tmp_label.setObjectName("sumpyo_down")
-            tmp_label.setFixedSize(8, 8)
-            tmp_label.setPixmap(QPixmap("image/sumpyo2_down.png"))
-            self.sumpyos.append(tmp_label)
-            self.sumpyos_layout.addWidget(tmp_label, 0 + 10 * i)
-
-            # yeobaek
-            tmp_label = QLabel()
-            tmp_label.setObjectName("yeobaek_sumpyo")
-            tmp_label.setFixedSize(8, 1)
-            self.sumpyos_layout.addWidget(tmp_label, 1 + 10 * i)
-
-            for j in range(3):
-                # sumpyo_up
-                tmp_label = QLabel()
-                tmp_label.setObjectName("sumpyo_up")
-                tmp_label.setFixedSize(8, 8)
-                tmp_label.setPixmap(QPixmap("image/sumpyo2.png"))
-                self.sumpyos.append(tmp_label)
-                self.sumpyos_layout.addWidget(tmp_label, 2 + 2 * j + 10 * i)
-
-                # sumpyo_down
-                tmp_label = QLabel()
-                tmp_label.setObjectName("sumpyo_down")
-                tmp_label.setFixedSize(8, 8)
-                tmp_label.setPixmap(QPixmap("image/sumpyo2_down.png"))
-                self.sumpyos.append(tmp_label)
-                self.sumpyos_layout.addWidget(tmp_label, 3 + 2 * j + 10 * i)
-
-            # yeobaek
-            tmp_label = QLabel()
-            tmp_label.setObjectName("yeobaek_sumpyo")
-            tmp_label.setFixedSize(8, 1)
-            self.sumpyos_layout.addWidget(tmp_label, 8 + 10 * i)
-
-            # sumpyo_up
-            tmp_label = QLabel()
-            tmp_label.setObjectName("sumpyo_up")
-            tmp_label.setFixedSize(8, 8)
-            tmp_label.setPixmap(QPixmap("image/sumpyo2.png"))
-            self.sumpyos.append(tmp_label)
-            self.sumpyos_layout.addWidget(tmp_label, 9 + 10 * i)
-
-            for k in range(3):
-                # sigimsae
-                tmp_label = QLabel()
-                tmp_label.setObjectName("sigimsae")
-                tmp_label.setFixedSize(27, 22)
-                self.elements.append(tmp_label)
-                self.sigimsae_layout.addWidget(tmp_label, 3 * i + k)
-
-
 
     def set_style(self) -> None:
         if Gasaran.css_content is None:
@@ -420,18 +318,13 @@ class Gak(QGridLayout):  # Gang * n
         self.gangs = num
         self.gangs_obj = []  # list(QgridLayout)
 
+        self.setSpacing(0)
         self.setContentsMargins(0, 0, 0, 0)
 
-        self.sumpyo_col = Sumpyo(parent=self)
-
         for i in range(num):
-            tmp_label = None
-            if i == 0:
-                tmp_label = Gang(num=3, _id=i, is_first=True, parent=self)
-            else:
-                tmp_label = Gang(num=3, _id=i, is_first=False, parent=self)
+            tmp_label = Gang(num=3, _id=i, parent=self)
             self.gangs_obj.append(tmp_label)
-            self.addLayout(tmp_label, i, 0)
+            self.addLayout(tmp_label, i, 1)
 
     def get_max_gang(self):
         return self.gangs - 1
@@ -452,13 +345,13 @@ class Gak(QGridLayout):  # Gang * n
             if prev_gak.id == self.id:  # not prev
                 return self.gangs_obj[_id]
             else:  # prev
-                return prev_gak.gangs_obj[prev_gak.gangs - 1]
+                return prev_gak.gangs_obj[prev_gak.get_max_gang()]
         else:
             return self.gangs_obj[_id - 1]
 
 
 class Gang(QGridLayout):  # Gasaran + Jeonggan * n
-    def __init__(self, num=3, _id=None, is_first: bool = False, is_last: bool = False, parent=None):
+    def __init__(self, num=3, _id=None, parent=None):
         super().__init__()
         self.parent = parent
         self.id = _id
@@ -469,73 +362,12 @@ class Gang(QGridLayout):  # Gasaran + Jeonggan * n
         self.setSpacing(0)
         self.setContentsMargins(0, 0, 0, 0)
 
-        self.gasaran = Gasaran(num=num, parent=self)
+        self.addWidget(Gasaran(), 0, 0, num, 1)
+        for i in range(num):
+            tmp_label = Jeonggan(row=1, _id=i, parent=self)
 
-        if is_first:
-            self.addWidget(TopPart(), 0, 0, 1, 2)
-
-            top_left_down_part = QLabel()
-            top_left_down_part.setObjectName("top_left")
-            top_left_down_part.setFixedSize(54, 8)
-            self.addWidget(top_left_down_part, 1, 0)
-
-            sumpyo_and_right_down = QHBoxLayout()
-
-            # sumpyo_up
-            tmp_label = QLabel()
-            tmp_label.setObjectName("sumpyo_up")
-            tmp_label.setFixedSize(8, 8)
-            tmp_label.setPixmap(QPixmap("image/sumpyo2.png"))
-            self.gasaran.sumpyos.insert(0, tmp_label)
-            sumpyo_and_right_down.addWidget(tmp_label)
-
-            top_right_down_part = QLabel()
-            top_right_down_part.setObjectName("top_right")
-            top_right_down_part.setFixedSize(35 - 8, 8)
-            sumpyo_and_right_down.addWidget(top_right_down_part)
-
-            self.addLayout(sumpyo_and_right_down, 1, 1)
-
-            for i in range(num):
-                tmp_label = Jeonggan(row=1, _id=i, parent=self)
-
-                self.jeonggans_obj.append(tmp_label)
-                self.addLayout(tmp_label, i + 2, 0)
-
-            # self.addWidget(Gasaran(), 0, 1, num, 1)
-            self.addLayout(self.gasaran, 2, 1, num, 1)
-        else:
-            for i in range(num):
-                tmp_label = Jeonggan(row=1, _id=i, parent=self)
-
-                self.jeonggans_obj.append(tmp_label)
-                self.addLayout(tmp_label, i, 0)
-
-            # self.addWidget(Gasaran(), 0, 1, num, 1)
-            self.addLayout(self.gasaran, 0, 1, num, 1)
-
-            if is_last:
-                bottom_left_down_part = QLabel()
-                bottom_left_down_part.setObjectName("bottom_left")
-                bottom_left_down_part.setFixedSize(54, 8)
-                self.addWidget(bottom_left_down_part, num, 0)
-
-                sumpyo_and_right_down_last = QHBoxLayout()
-
-                # sumpyo_down
-                tmp_label = QLabel()
-                tmp_label.setObjectName("sumpyo_down")
-                tmp_label.setFixedSize(8, 8)
-                tmp_label.setPixmap(QPixmap("image/sumpyo2_down.png"))
-                self.gasaran.sumpyos.append(tmp_label)
-                sumpyo_and_right_down_last.addWidget(tmp_label)
-
-                bottom_right_down_part = QLabel()
-                bottom_right_down_part.setObjectName("bottom_right")
-                bottom_right_down_part.setFixedSize(35 - 8, 8)
-                sumpyo_and_right_down_last.addWidget(bottom_right_down_part)
-
-                self.addLayout(sumpyo_and_right_down_last, num, 1)
+            self.jeonggans_obj.append(tmp_label)
+            self.addLayout(tmp_label, i, 1)
 
     def get_max_jeonggan(self):
         return self.jeonggans - 1
@@ -989,7 +821,6 @@ class Kan(QLabel):
         self.set_style()
 
         self.setMargin(0)
-        self.setContentsMargins(0, 0, 0, 0)
 
         self.setText("")
 
