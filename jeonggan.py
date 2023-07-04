@@ -11,6 +11,8 @@ from PyQt5 import QtCore
 from pitch_name import PitchName, PitchNamePlus1, PitchNamePlus2, PitchNameMinus1, PitchNameMinus2
 from pitch_etc_name import PitchEtcName
 
+css_content = None
+
 
 class Page(QWidget):
     def __init__(self, gaks: int = 6, title: bool = False, _id: int = None, parent=None):
@@ -72,8 +74,6 @@ class Page(QWidget):
 
 
 class TopPart(QLabel):
-    css_content = None
-
     def __init__(self, parent=None):
         super().__init__(parent)
         self.set_style()
@@ -84,15 +84,15 @@ class TopPart(QLabel):
         self.setContentsMargins(0, 0, 0, 0)
 
     def set_style(self) -> None:
-        if TopPart.css_content is None:
+        global css_content
+        if css_content is None:
             with open("style.css", 'r') as f:
-                TopPart.css_content = f.read()
+                css_content = f.read()
 
-        self.setStyleSheet(TopPart.css_content)
+        self.setStyleSheet(css_content)
 
 
 class LeftPart(QVBoxLayout):
-    css_content = None
     calc_width = None
 
     def __init__(self, parent=None):
@@ -118,17 +118,16 @@ class LeftPart(QVBoxLayout):
         tmp_label_2.setFixedSize(width, 8)
         self.addWidget(tmp_label_2)
 
-
     def set_style(self) -> None:
-        if LeftPart.css_content is None:
+        global css_content
+        if css_content is None:
             with open("style.css", 'r') as f:
-                LeftPart.css_content = f.read()
+                css_content = f.read()
 
-        self.setStyleSheet(LeftPart.css_content)
+        self.setStyleSheet(css_content)
 
 
 class BottomPart(QLabel):
-    css_content = None
     calc_width = None
 
     def __init__(self, parent=None):
@@ -143,15 +142,15 @@ class BottomPart(QLabel):
         tmp_label_0.setFixedHeight(20)
 
     def set_style(self) -> None:
-        if BottomPart.css_content is None:
+        global css_content
+        if css_content is None:
             with open("style.css", 'r') as f:
-                BottomPart.css_content = f.read()
+                css_content = f.read()
 
-        self.setStyleSheet(BottomPart.css_content)
+        self.setStyleSheet(css_content)
 
 
 class NonTitlePart(QLabel):
-    css_content = None
     calc_width = None
 
     def __init__(self, parent=None):
@@ -162,8 +161,9 @@ class NonTitlePart(QLabel):
         self.setContentsMargins(0, 0, 0, 0)
 
         if NonTitlePart.calc_width is None:
+            global css_content
             # subtitle font size
-            s_css_style = json_extract(TitlePart.css_content, "TitlePart", "left")
+            s_css_style = json_extract(css_content, "TitlePart", "left")
             s_p = re.compile("font-size: ([0-9]+)pt;")
             s_search_result = s_p.search(s_css_style)
 
@@ -177,7 +177,7 @@ class NonTitlePart(QLabel):
             print(s_px_from_pt)
 
             # title font size
-            t_css_style = json_extract(TitlePart.css_content, "TitlePart", "right")  # title font size
+            t_css_style = json_extract(css_content, "TitlePart", "right")  # title font size
             t_p = re.compile("font-size: ([0-9]+)pt;")
             t_search_result = t_p.search(t_css_style)
 
@@ -196,11 +196,12 @@ class NonTitlePart(QLabel):
         self.set_style()
 
     def set_style(self) -> None:
-        if NonTitlePart.css_content is None:
+        global css_content
+        if css_content is None:
             with open("style.css", 'r') as f:
-                NonTitlePart.css_content = f.read()
+                css_content = f.read()
 
-        self.setStyleSheet(NonTitlePart.css_content)
+        self.setStyleSheet(css_content)
 
 
 class TitlePartFrame(QFrame):
@@ -223,8 +224,6 @@ class TitlePartFrame(QFrame):
 
 
 class TitlePart(QGridLayout):
-    css_content = None
-
     def __init__(self, parent=None):
         super().__init__()
         self.setSpacing(0)
@@ -270,12 +269,13 @@ class TitlePart(QGridLayout):
         self.convert_vertical_rl(0, 0)
 
     def set_style(self, obj, attr: str = None) -> None:
-        if TitlePart.css_content is None:
+        global css_content
+        if css_content is None:
             with open("style.css", 'r') as f:
-                TitlePart.css_content = f.read()
+                css_content = f.read()
 
         if attr is None:
-            obj.setStyleSheet(TitlePart.css_content)
+            obj.setStyleSheet(css_content)
             return
 
         width_dict = {"left_margin": 30, "right_margin": 60}
@@ -283,15 +283,15 @@ class TitlePart(QGridLayout):
         font_size = {"left": 14, "right": 24}
 
         if attr in ["left_margin", "right_margin"]:
-            css_style = json_extract(TitlePart.css_content, "TitlePart", attr)
+            css_style = json_extract(css_content, "TitlePart", attr)
             obj.setStyleSheet(css_style)
             obj.setFixedWidth(width_dict[attr])
         elif attr in ["top_margin", "bottom_margin"]:
-            css_style = json_extract(TitlePart.css_content, "TitlePart", attr)
+            css_style = json_extract(css_content, "TitlePart", attr)
             obj.setStyleSheet(css_style)
             obj.setFixedHeight(height_dict[attr])
         elif attr in ["left", "right"]:  # subtitle, title
-            css_style = json_extract(TitlePart.css_content, "TitlePart", attr)
+            css_style = json_extract(css_content, "TitlePart", attr)
             obj.setStyleSheet(css_style)
 
     def dialog_open(self) -> None:
@@ -371,7 +371,6 @@ class TitlePart(QGridLayout):
 
 
 class Sumpyo(QLabel):
-    css_content = None
     SIZE = {"up": (8, 8), "down": (8, 8)}
     ICON_PATH = {"up": "image/sumpyo2.png", "down": "image/sumpyo2_down.png"}
 
@@ -397,31 +396,32 @@ class Sumpyo(QLabel):
         self.setObjectName(label_type)
 
     def set_style(self) -> None:
-        if Sumpyo.css_content is None:
+        global css_content
+        if css_content is None:
             with open("style.css", 'r') as f:
-                Sumpyo.css_content = f.read()
+                css_content = f.read()
 
         if self.label_type is None:
-            self.setStyleSheet(Sumpyo.css_content)
+            self.setStyleSheet(css_content)
             return
         else:
-            self.setStyleSheet(Sumpyo.css_content)
+            self.setStyleSheet(css_content)
 
         if self.label_type in ["up"]:
             if self.is_first and self.is_bottom_border:
-                css_style = json_extract(Sumpyo.css_content, "Sumpyo", self.label_type + "+first+bottom_border")
+                css_style = json_extract(css_content, "Sumpyo", self.label_type + "+first+bottom_border")
             elif self.is_bottom_border:
-                css_style = json_extract(Sumpyo.css_content, "Sumpyo", self.label_type + "+bottom_border")
+                css_style = json_extract(css_content, "Sumpyo", self.label_type + "+bottom_border")
             else:
-                css_style = json_extract(Sumpyo.css_content, "Sumpyo", self.label_type)
+                css_style = json_extract(css_content, "Sumpyo", self.label_type)
             self.setStyleSheet(css_style)
             self.setPixmap(QPixmap(Sumpyo.ICON_PATH[self.label_type]))
             self.setFixedSize(*Sumpyo.SIZE[self.label_type])
         elif self.label_type in ["down"]:
             if self.is_last:
-                css_style = json_extract(Sumpyo.css_content, "Sumpyo", self.label_type + "+last")
+                css_style = json_extract(css_content, "Sumpyo", self.label_type + "+last")
             else:
-                css_style = json_extract(Sumpyo.css_content, "Sumpyo", self.label_type)
+                css_style = json_extract(css_content, "Sumpyo", self.label_type)
             self.setStyleSheet(css_style)
             self.setPixmap(QPixmap(Sumpyo.ICON_PATH[self.label_type]))
             self.setFixedSize(*Sumpyo.SIZE[self.label_type])
@@ -471,8 +471,6 @@ class Sumpyo(QLabel):
 
 
 class Sigimsae(QLabel):
-    css_content = None
-
     def __init__(self, _id: int, is_bottom_border: bool = False, is_first_row: bool = False, parent=None):
         super().__init__()
         self.parent = parent
@@ -486,16 +484,17 @@ class Sigimsae(QLabel):
         self.setContentsMargins(0, 0, 0, 0)
 
     def set_style(self, obj, attr: str = None) -> None:
-        if Sigimsae.css_content is None:
+        global css_content
+        if css_content is None:
             with open("style.css", 'r') as f:
-                Sigimsae.css_content = f.read()
+                css_content = f.read()
 
-        obj.setStyleSheet(Sigimsae.css_content)
+        obj.setStyleSheet(css_content)
 
         icon_path = {"up": "image/sumpyo2.png", "down": "image/sumpyo2_down.png"}
 
         if self.is_bottom_border:
-            css_style = json_extract(Sigimsae.css_content, "Sigimsae", "bottom_border")
+            css_style = json_extract(css_content, "Sigimsae", "bottom_border")
             obj.setStyleSheet(css_style)
         # obj.setPixmap(QPixmap(icon_path[attr]))
         obj.setFixedSize(35 - 8, 66 // 3)
@@ -504,8 +503,6 @@ class Sigimsae(QLabel):
 
 
 class Gasaran(QHBoxLayout):
-    css_content = None
-
     def __init__(self, num: int = 1, parent=None):
         super().__init__()
         # self.set_style()
@@ -594,11 +591,12 @@ class Gasaran(QHBoxLayout):
         return tmp_label
 
     def set_style(self) -> None:
-        if Gasaran.css_content is None:
+        global css_content
+        if css_content is None:
             with open("style.css", 'r') as f:
-                Gasaran.css_content = f.read()
+                css_content = f.read()
 
-        self.setStyleSheet(Gasaran.css_content)
+        self.setStyleSheet(css_content)
 
     def get_sumpyos(self, pos: int) -> Sumpyo:
         return self.sumpyos[pos]
@@ -1204,7 +1202,6 @@ class Jeonggan(QGridLayout):
 class Kan(QLabel):
     count = 0
     clicked_obj = None
-    css_content = None
 
     key_mapping = None
 
@@ -1234,9 +1231,10 @@ class Kan(QLabel):
         self.isClicked = False
 
     def set_style(self):
-        if Kan.css_content is None:
+        global css_content
+        if css_content is None:
             with open("style.css", 'r') as f:
-                Kan.css_content = f.read()
+                css_content = f.read()
 
         font_size = 16
 
@@ -1247,9 +1245,9 @@ class Kan(QLabel):
         elif max(self.rows, self.cols) == 3:
             font_size = 14
 
-        css_clicked = json_extract(Kan.css_content, "Kan", "clicked")
-        css_first = json_extract(Kan.css_content, "Kan", "first")
-        css_last = json_extract(Kan.css_content, "Kan", "last")
+        css_clicked = json_extract(css_content, "Kan", "clicked")
+        css_first = json_extract(css_content, "Kan", "first")
+        css_last = json_extract(css_content, "Kan", "last")
 
         stylesheet = f"font-size: {font_size}pt;"
 
