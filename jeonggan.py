@@ -74,7 +74,7 @@ class Page(QWidget):
 
 
 class TopPart(QLabel):
-    def __init__(self, parent=None):
+    def __init__(self, parent: Page = None):
         super().__init__(parent)
         self.set_style()
 
@@ -95,7 +95,7 @@ class TopPart(QLabel):
 class LeftPart(QVBoxLayout):
     calc_width = None
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: Page = None):
         super().__init__()
         self.parent = parent
 
@@ -130,7 +130,7 @@ class LeftPart(QVBoxLayout):
 class BottomPart(QLabel):
     calc_width = None
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: Page = None):
         super().__init__()
         self.parent = parent
 
@@ -153,7 +153,7 @@ class BottomPart(QLabel):
 class NonTitlePart(QLabel):
     calc_width = None
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: Page = None):
         super().__init__()
         self.parent = parent
 
@@ -205,7 +205,7 @@ class NonTitlePart(QLabel):
 
 
 class TitlePartFrame(QFrame):
-    def __init__(self, parent=None):
+    def __init__(self, parent: Page = None):
         super().__init__()
         self.parent = parent
 
@@ -224,10 +224,11 @@ class TitlePartFrame(QFrame):
 
 
 class TitlePart(QGridLayout):
-    def __init__(self, parent=None):
+    def __init__(self, parent: Page = None):
         super().__init__()
         self.setSpacing(0)
         self.setContentsMargins(0, 0, 0, 0)
+        self.parent = parent
 
         self.frame = TitlePartFrame(parent=self)
         self.addWidget(self.frame)
@@ -268,7 +269,7 @@ class TitlePart(QGridLayout):
         self.subtitle = "소제목 또는 작곡가"
         self.convert_vertical_rl(0, 0)
 
-    def set_style(self, obj, attr: str = None) -> None:
+    def set_style(self, obj: QLabel, attr: str = None) -> None:
         global css_content
         if css_content is None:
             with open("style.css", 'r') as f:
@@ -376,7 +377,7 @@ class Sumpyo(QLabel):
 
     def __init__(self, _id: int, label_type: str,
                  is_first: bool = False, is_last: bool = False,
-                 is_bottom_border: bool = False, is_first_row: bool = False, parent=None):
+                 is_bottom_border: bool = False, is_first_row: bool = False, parent: "Gasaran" = None):
         super().__init__()
         self.parent = parent
 
@@ -432,7 +433,7 @@ class Sumpyo(QLabel):
     def get_id(self) -> int:
         return self.id
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event) -> None:
         position = event.pos()
         print(f"Clicked at position: {position.x()}, {position.y()}")
         print(f"x: {self.geometry().x()}, y: {self.geometry().y()}, "
@@ -471,7 +472,8 @@ class Sumpyo(QLabel):
 
 
 class Sigimsae(QLabel):
-    def __init__(self, _id: int, is_bottom_border: bool = False, is_first_row: bool = False, parent=None):
+    def __init__(self, _id: int, is_bottom_border: bool = False, is_first_row: bool = False,
+                 parent: "Gasaran" = None):
         super().__init__()
         self.parent = parent
 
@@ -483,7 +485,7 @@ class Sigimsae(QLabel):
         self.setMargin(0)
         self.setContentsMargins(0, 0, 0, 0)
 
-    def set_style(self, obj, attr: str = None) -> None:
+    def set_style(self, obj: QLabel) -> None:
         global css_content
         if css_content is None:
             with open("style.css", 'r') as f:
@@ -503,7 +505,7 @@ class Sigimsae(QLabel):
 
 
 class Gasaran(QHBoxLayout):
-    def __init__(self, num: int = 1, parent=None):
+    def __init__(self, num: int = 1, parent: "Gang" = None):
         super().__init__()
         # self.set_style()
 
@@ -617,7 +619,7 @@ class Gasaran(QHBoxLayout):
 
     def insert_sumpyos_pos(self, pos: int, label_type: str,
                  is_first: bool = False, is_last: bool = False,
-                 is_bottom_border: bool = False, is_first_row: bool = False, parent=None) -> None:
+                 is_bottom_border: bool = False, is_first_row: bool = False, parent: "Gasaran" = None) -> None:
         self.sumpyos.insert(pos, Sumpyo(label_type=label_type, _id=self._id_sumpyo_count,
                                    is_first=is_first, is_last=is_last,
                                    is_bottom_border=is_bottom_border, is_first_row=is_first_row, parent=parent))
@@ -625,7 +627,7 @@ class Gasaran(QHBoxLayout):
 
     def append_sumpyos(self, label_type: str,
                  is_first: bool = False, is_last: bool = False,
-                 is_bottom_border: bool = False, is_first_row: bool = False, parent=None) -> None:
+                 is_bottom_border: bool = False, is_first_row: bool = False, parent: "Gasaran" = None) -> None:
         self.sumpyos.append(Sumpyo(label_type=label_type, _id=self._id_sumpyo_count,
                                    is_first=is_first, is_last=is_last,
                                    is_bottom_border=is_bottom_border, is_first_row=is_first_row, parent=parent))
@@ -633,7 +635,7 @@ class Gasaran(QHBoxLayout):
 
 
 class Gak(QGridLayout):  # Gang * n
-    def __init__(self, num=3, _id=None, parent=None):
+    def __init__(self, num=3, _id=None, parent: Page = None):
         super().__init__()
         self.parent = parent
         self.id = _id
@@ -679,7 +681,7 @@ class Gak(QGridLayout):  # Gang * n
 
 
 class Gang(QGridLayout):  # Gasaran + Jeonggan * n
-    def __init__(self, num=3, _id=None, is_first: bool = False, is_last: bool = False, parent=None):
+    def __init__(self, num=3, _id=None, is_first: bool = False, is_last: bool = False, parent: Gak = None):
         super().__init__()
         self.parent = parent
         self.id = _id
@@ -707,7 +709,7 @@ class Gang(QGridLayout):  # Gasaran + Jeonggan * n
             sumpyo_and_right_down.setSpacing(0)
 
             self.gasaran.insert_sumpyos_pos(0, label_type="up",
-                                                   is_first=True, is_bottom_border=True, parent=self.gasaran)
+                                            is_first=True, is_bottom_border=True, parent=self.gasaran)
             sumpyo_and_right_down.addWidget(self.gasaran.get_sumpyos(0))
 
             sumpyo_and_right_down.addWidget(self.setting_form("first_top_right"))
@@ -804,7 +806,7 @@ class Gang(QGridLayout):  # Gasaran + Jeonggan * n
 
 
 class Jeonggan(QGridLayout):
-    def __init__(self, row=1, _id=None, parent=None):
+    def __init__(self, row=1, _id: int = None, parent: Gang = None):
         super().__init__()
         self.parent = parent
         self.id = _id
@@ -828,10 +830,10 @@ class Jeonggan(QGridLayout):
     def get_rows(self) -> int:
         return self.rows
 
-    def append(self, row: int):
+    def append(self, row: int) -> "Kan":
         return self.insert(row, self.kans[row])
 
-    def insert(self, row: int, col: int):
+    def insert(self, row: int, col: int) -> "Kan":
         if row < 0:
             raise IndexError(f"{self.insert.__name__}: "
                              f"row 값이 0보다 작습니다({row}).")
@@ -879,10 +881,10 @@ class Jeonggan(QGridLayout):
 
         return self.kans_obj[row][col]
 
-    def append_row(self):
+    def append_row(self) -> "kan":
         return self.insert_row(self.rows)
 
-    def insert_row(self, row_pos: int):
+    def insert_row(self, row_pos: int) -> "Kan":
         for i in range(self.rows):
             self.removeItem(self.rows_obj[i])
 
@@ -972,7 +974,7 @@ class Jeonggan(QGridLayout):
         for i in range(self.rows):
             self.addLayout(self.rows_obj[i], i, 0)
 
-    def extend_1_to_2(self):
+    def extend_1_to_2(self) -> "Kan":
         if self.rows != 1:
             raise IndexError(f"{self.extend_1_to_2.__name__}: "
                              f"row 값이 1이 아닙니다({self.rows}).")
@@ -985,7 +987,7 @@ class Jeonggan(QGridLayout):
 
         return self.kans_obj[1][0]
 
-    def extend_2_to_3(self):
+    def extend_2_to_3(self) -> "Kan":
         if self.rows != 2:
             raise IndexError(f"{self.extend_2_to_3.__name__}: "
                              f"row 값이 2가 아닙니다({self.rows}).")
@@ -1002,7 +1004,7 @@ class Jeonggan(QGridLayout):
 
         return self.kans_obj[2][0]
 
-    def extend_3_to_4(self):
+    def extend_3_to_4(self) -> "Kan":
         if self.rows != 3:
             raise IndexError(f"{self.extend_3_to_4.__name__}: "
                              f"row 값이 3이 아닙니다({self.rows}).")
@@ -1031,7 +1033,7 @@ class Jeonggan(QGridLayout):
 
         return self.kans_obj[1][1]
 
-    def extend_4_to_5(self):
+    def extend_4_to_5(self) -> "Kan":
         if self.rows != 2:
             raise IndexError(f"{self.extend_4_to_5.__name__}: "
                              f"row 값이 2가 아닙니다({self.rows}).")
@@ -1048,7 +1050,7 @@ class Jeonggan(QGridLayout):
 
         return self.kans_obj[2][0]
 
-    def extend_5_to_6(self):
+    def extend_5_to_6(self) -> "Kan":
         if self.rows != 3:
             raise IndexError(f"{self.extend_5_to_6.__name__}: "
                              f"row 값이 3이 아닙니다({self.rows}).")
