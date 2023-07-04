@@ -372,8 +372,10 @@ class TitlePart(QGridLayout):
 
 class Sumpyo(QLabel):
     css_content = None
+    SIZE = {"up": (8, 8), "down": (8, 8)}
+    ICON_PATH = {"up": "image/sumpyo2.png", "down": "image/sumpyo2_down.png"}
 
-    def __init__(self, label_type: str,
+    def __init__(self, _id: int, label_type: str,
                  is_first: bool = False, is_last: bool = False,
                  is_bottom_border: bool = False, is_first_row: bool = False, parent=None):
         super().__init__()
@@ -384,50 +386,94 @@ class Sumpyo(QLabel):
         self.is_bottom_border = is_bottom_border
         self.is_first_row = is_first_row
 
-        self.set_style(self, label_type)
+        self.is_enabled = False
+
+        self.id = _id
+        self.label_type = label_type
+        self.set_style()
 
         self.setMargin(0)
         self.setContentsMargins(0, 0, 0, 0)
         self.setObjectName(label_type)
 
-    def set_style(self, obj, attr: str = None) -> None:
+    def set_style(self) -> None:
         if Sumpyo.css_content is None:
             with open("style.css", 'r') as f:
                 Sumpyo.css_content = f.read()
 
-        if attr is None:
-            obj.setStyleSheet(Sumpyo.css_content)
+        if self.label_type is None:
+            self.setStyleSheet(Sumpyo.css_content)
             return
         else:
-            obj.setStyleSheet(Sumpyo.css_content)
+            self.setStyleSheet(Sumpyo.css_content)
 
-        size = {"up": (8, 8), "down": (8, 8)}
-        icon_path = {"up": "image/sumpyo2.png", "down": "image/sumpyo2_down.png"}
-
-        if attr in ["up"]:
+        if self.label_type in ["up"]:
             if self.is_first and self.is_bottom_border:
-                css_style = json_extract(Sumpyo.css_content, "Sumpyo", attr + "+first+bottom_border")
+                css_style = json_extract(Sumpyo.css_content, "Sumpyo", self.label_type + "+first+bottom_border")
             elif self.is_bottom_border:
-                css_style = json_extract(Sumpyo.css_content, "Sumpyo", attr + "+bottom_border")
+                css_style = json_extract(Sumpyo.css_content, "Sumpyo", self.label_type + "+bottom_border")
             else:
-                css_style = json_extract(Sumpyo.css_content, "Sumpyo", attr)
-            obj.setStyleSheet(css_style)
-            obj.setPixmap(QPixmap(icon_path[attr]))
-            obj.setFixedSize(*size[attr])
-        elif attr in ["down"]:
+                css_style = json_extract(Sumpyo.css_content, "Sumpyo", self.label_type)
+            self.setStyleSheet(css_style)
+            self.setPixmap(QPixmap(Sumpyo.ICON_PATH[self.label_type]))
+            self.setFixedSize(*Sumpyo.SIZE[self.label_type])
+        elif self.label_type in ["down"]:
             if self.is_last:
-                css_style = json_extract(Sumpyo.css_content, "Sumpyo", attr + "+last")
+                css_style = json_extract(Sumpyo.css_content, "Sumpyo", self.label_type + "+last")
             else:
-                css_style = json_extract(Sumpyo.css_content, "Sumpyo", attr)
-            obj.setStyleSheet(css_style)
-            obj.setPixmap(QPixmap(icon_path[attr]))
-            obj.setFixedSize(*size[attr])
+                css_style = json_extract(Sumpyo.css_content, "Sumpyo", self.label_type)
+            self.setStyleSheet(css_style)
+            self.setPixmap(QPixmap(Sumpyo.ICON_PATH[self.label_type]))
+            self.setFixedSize(*Sumpyo.SIZE[self.label_type])
+
+        if not self.is_enabled:
+            self.clear()
+
+    def get_id(self) -> int:
+        return self.id
+
+    def mousePressEvent(self, event):
+        position = event.pos()
+        print(f"Clicked at position: {position.x()}, {position.y()}")
+        print(f"x: {self.geometry().x()}, y: {self.geometry().y()}, "
+              f"width: {self.geometry().width()}, height: {self.geometry().height()}")
+
+        self.click()
+
+    def click(self, is_me: bool = True):
+        if self.is_enabled:
+            self.clear()
+            self.is_enabled = False
+        else:
+            self.setPixmap(QPixmap(Sumpyo.ICON_PATH[self.label_type]))
+            self.is_enabled = True
+
+        if is_me:
+            if self.label_type == "up":
+                my_pos = self.parent.get_sumpyo_pos(self.id)
+
+                if my_pos == self.parent.get_max_sumpyo() - 1:
+                    next_gang = self.parent.parent.parent.find_next_gang(self.parent.parent.get_id())
+                    next_gasaran = next_gang.get_gasaran()
+                    next_gasaran.get_sumpyos(0).click(is_me=False)
+                else:
+                    self.parent.get_sumpyos(my_pos + 1).click(is_me=False)
+            elif self.label_type == "down":
+                my_pos = self.parent.get_sumpyo_pos(self.id)
+
+                if my_pos == 0:
+                    prev_gang = self.parent.parent.parent.find_prev_gang(self.parent.parent.get_id())
+                    prev_gasaran = prev_gang.get_gasaran()
+                    prev_gasaran_max = prev_gasaran.get_max_sumpyo()
+                    prev_gasaran.get_sumpyos(prev_gasaran_max - 1).click(is_me=False)
+                else:
+                    self.parent.get_sumpyos(my_pos - 1).click(is_me=False)
 
 
 class Sigimsae(QLabel):
     css_content = None
 
-    def __init__(self, is_bottom_border: bool = False, is_first_row: bool = False, parent=None):
+    def __init__(self, _id: int, is_bottom_border: bool = False, is_first_row: bool = False, parent=None):
         super().__init__()
         self.parent = parent
 
@@ -469,8 +515,10 @@ class Gasaran(QHBoxLayout):
 
         # self.setText("＜")
 
-        self.sigimsaes = [[] for i in range(num)]
-        self.sumpyos = [[] for i in range(num)]
+        self.parent = parent
+        self.num = num
+        self.sigimsaes: list[Sigimsae] = list()
+        self.sumpyos: list[Sumpyo] = list()
 
         self.sumpyos_layout = QVBoxLayout()
         self.sumpyos_layout.setContentsMargins(0, 0, 0, 0)
@@ -494,28 +542,38 @@ class Gasaran(QHBoxLayout):
         #        8              19      +       8
         #                    35
 
+        self._id_sumpyo_count = 0
+        self._id_sigimsae_count = 0
+
         for i in range(num):
-            self.sumpyos.append(Sumpyo("down"))
+            self.sumpyos.append(Sumpyo(label_type="down", _id=self._id_sumpyo_count, parent=self))
             self.sumpyos_layout.addWidget(self.sumpyos[-1], 0 + 10 * i)
+            self._id_sumpyo_count += 1
 
             self.sumpyos_layout.addWidget(self.setting_form("sumpyo_yeobaek"), 1 + 10 * i)
 
             for j in range(3):
-                self.sumpyos.append(Sumpyo("up"))
+                self.sumpyos.append(Sumpyo(label_type="up", _id=self._id_sumpyo_count, parent=self))
                 self.sumpyos_layout.addWidget(self.sumpyos[-1], 2 + 2 * j + 10 * i)
-                self.sumpyos.append(Sumpyo("down"))
+                self._id_sumpyo_count += 1
+                self.sumpyos.append(Sumpyo(label_type="down", _id=self._id_sumpyo_count, parent=self))
                 self.sumpyos_layout.addWidget(self.sumpyos[-1], 3 + 2 * j + 10 * i)
+                self._id_sumpyo_count += 1
 
             self.sumpyos_layout.addWidget(self.setting_form("sumpyo_yeobaek"), 8 + 10 * i)
-            self.sumpyos.append(Sumpyo("up", is_bottom_border=(i == num - 1)))
+            self.sumpyos.append(Sumpyo(label_type="up", _id=self._id_sumpyo_count,
+                                       is_bottom_border=(i == num - 1), parent=self))
             self.sumpyos_layout.addWidget(self.sumpyos[-1], 9 + 10 * i)
+            self._id_sumpyo_count += 1
 
             for k in range(2):
-                self.sigimsaes.append(Sigimsae())
+                self.sigimsaes.append(Sigimsae(_id=self._id_sigimsae_count, parent=self))
                 self.sigimsae_layout.addWidget(self.sigimsaes[-1], 3 * i + k)
+                self._id_sigimsae_count += 1
 
-            self.sigimsaes.append(Sigimsae(is_bottom_border=(i == num - 1)))
+            self.sigimsaes.append(Sigimsae(_id=self._id_sigimsae_count, is_bottom_border=(i == num - 1), parent=self))
             self.sigimsae_layout.addWidget(self.sigimsaes[-1], 3 * i + 2)
+            self._id_sigimsae_count += 1
 
     def setting_form(self, label_type: str) -> QLabel:
         size = {"sumpyo_yeobaek": (8, 1), "sigimsae": (35 - 8, 66 // 3)}
@@ -541,6 +599,39 @@ class Gasaran(QHBoxLayout):
                 Gasaran.css_content = f.read()
 
         self.setStyleSheet(Gasaran.css_content)
+
+    def get_sumpyos(self, pos: int) -> Sumpyo:
+        return self.sumpyos[pos]
+
+    def get_sumpyo_pos(self, _id: int) -> int:
+        for i in range(len(self.sumpyos)):
+            if self.sumpyos[i].get_id() == _id:
+                return i
+        else:
+            raise IndexError(f"{self.get_sumpyo_pos.__name__}: "
+                             f"요청한 id 값이 해당 객체에 존재하지 않습니다({_id}).")
+
+    def get_max_sumpyo(self) -> int:
+        return len(self.sumpyos)
+
+    def get_sumpyos_size(self) -> int:
+        return len(self.sumpyos)
+
+    def insert_sumpyos_pos(self, pos: int, label_type: str,
+                 is_first: bool = False, is_last: bool = False,
+                 is_bottom_border: bool = False, is_first_row: bool = False, parent=None) -> None:
+        self.sumpyos.insert(pos, Sumpyo(label_type=label_type, _id=self._id_sumpyo_count,
+                                   is_first=is_first, is_last=is_last,
+                                   is_bottom_border=is_bottom_border, is_first_row=is_first_row, parent=parent))
+        self._id_sumpyo_count += 1
+
+    def append_sumpyos(self, label_type: str,
+                 is_first: bool = False, is_last: bool = False,
+                 is_bottom_border: bool = False, is_first_row: bool = False, parent=None) -> None:
+        self.sumpyos.append(Sumpyo(label_type=label_type, _id=self._id_sumpyo_count,
+                                   is_first=is_first, is_last=is_last,
+                                   is_bottom_border=is_bottom_border, is_first_row=is_first_row, parent=parent))
+        self._id_sumpyo_count += 1
 
 
 class Gak(QGridLayout):  # Gang * n
@@ -605,6 +696,9 @@ class Gang(QGridLayout):  # Gasaran + Jeonggan * n
 
         jeonggan_start_point = 0
 
+        self.is_first = is_first
+        self.is_last = is_last
+
         if is_first:
             self.addWidget(TopPart(), 0, 0, 1, 2)
 
@@ -614,8 +708,9 @@ class Gang(QGridLayout):  # Gasaran + Jeonggan * n
             sumpyo_and_right_down.setContentsMargins(0, 0, 0, 0)
             sumpyo_and_right_down.setSpacing(0)
 
-            self.gasaran.sumpyos.insert(0, Sumpyo("up", is_first=True, is_bottom_border=True))
-            sumpyo_and_right_down.addWidget(self.gasaran.sumpyos[0])
+            self.gasaran.insert_sumpyos_pos(0, label_type="up",
+                                                   is_first=True, is_bottom_border=True, parent=self.gasaran)
+            sumpyo_and_right_down.addWidget(self.gasaran.get_sumpyos(0))
 
             sumpyo_and_right_down.addWidget(self.setting_form("first_top_right"))
 
@@ -639,8 +734,8 @@ class Gang(QGridLayout):  # Gasaran + Jeonggan * n
             sumpyo_and_right_down_last.setContentsMargins(0, 0, 0, 0)
             sumpyo_and_right_down_last.setSpacing(0)
 
-            self.gasaran.sumpyos.append(Sumpyo("down", is_last=True))
-            sumpyo_and_right_down_last.addWidget(self.gasaran.sumpyos[-1])
+            self.gasaran.append_sumpyos(label_type="down", is_last=True, parent=self.gasaran)
+            sumpyo_and_right_down_last.addWidget(self.gasaran.get_sumpyos(-1))
 
             if _id == 0:  # the first row
                 sumpyo_and_right_down_last.addWidget(self.setting_form("last_bottom_right_id0"))
@@ -673,6 +768,12 @@ class Gang(QGridLayout):  # Gasaran + Jeonggan * n
             self.gasaran.sumpyos.append(tmp_label)
 
         return tmp_label
+
+    def get_id(self) -> int:
+        return self.id
+
+    def get_gasaran(self) -> Gasaran:
+        return self.gasaran
 
     def get_max_jeonggan(self):
         return self.jeonggans - 1
