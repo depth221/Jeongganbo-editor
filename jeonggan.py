@@ -472,6 +472,8 @@ class Sumpyo(QLabel):
 
 
 class Sigimsae(QLabel):
+    ICON_PATH = {"nongeum": "image/heullim_pyo1.png", "nongeum_bottom": "image/heullim_pyo1.png"}
+
     def __init__(self, _id: int, is_bottom_border: bool = False, is_first_row: bool = False,
                  parent: "Gasaran" = None):
         super().__init__()
@@ -479,11 +481,18 @@ class Sigimsae(QLabel):
 
         self.is_bottom_border = is_bottom_border
         self.is_first_row = is_first_row
+        self.id = _id
+        self.label_type = None
 
         self.set_style(self)
 
         self.setMargin(0)
         self.setContentsMargins(0, 0, 0, 0)
+
+        if self.is_bottom_border:
+            self.set_sigimsae("nongeum_bottom")
+        else:
+            self.set_sigimsae("nongeum")
 
     def set_style(self, obj: QLabel) -> None:
         global css_content
@@ -502,6 +511,15 @@ class Sigimsae(QLabel):
         obj.setFixedSize(35 - 8, 66 // 3)
 
         # if attr in ["up"]:
+
+    def get_id(self) -> int:
+        return self.id
+
+    def set_sigimsae(self, label_type: str) -> None:
+        self.label_type = label_type
+
+        self.clear()
+        self.setPixmap(QPixmap(Sigimsae.ICON_PATH[self.label_type]))
 
 
 class Gasaran(QHBoxLayout):
@@ -1409,6 +1427,7 @@ class Kan(QLabel):
                         else:
                             next_kan = self.parent.find_next_kan(self.id)
 
+                    self.setPixmap(QPixmap("image/sigimsae/gyop_heullim_pyo.png"))
                     next_kan.setText(note)
 
                     if next_kan is None:
