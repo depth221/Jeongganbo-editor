@@ -137,9 +137,7 @@ class BottomPart(QLabel):
         self.setMargin(0)
         self.setContentsMargins(0, 0, 0, 0)
 
-        tmp_label_0 = QLabel()
-        tmp_label_0.setObjectName("LeftPart0")
-        tmp_label_0.setFixedHeight(20)
+        self.setFixedHeight(20)
 
     def set_style(self) -> None:
         global css_content
@@ -1462,8 +1460,9 @@ class Kan(QLabel):
         if self.is_last:
             stylesheet += css_last
 
-        if Kan.clicked_obj.id == self.id:
-            stylesheet += css_clicked
+        if Kan.clicked_obj is not None:
+            if Kan.clicked_obj.id == self.id:
+                stylesheet += css_clicked
 
         self.setStyleSheet(stylesheet)
 
