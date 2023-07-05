@@ -1,14 +1,17 @@
 import json
 import re
 
+from PyQt5.QtCore import QMargins
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QToolTip, QStatusBar, QMainWindow, \
     QApplication, QGridLayout, QLabel, QAction, qApp, QDesktopWidget, QDialog, QLineEdit, QFormLayout, QHBoxLayout, \
-    QVBoxLayout, QFrame
-from PyQt5.QtGui import QFont, QIcon, QColor, QPalette, QFontMetrics
+    QVBoxLayout, QFrame, QSizePolicy, QStackedLayout, QStackedWidget, QStyle, QGraphicsOpacityEffect, QLayout, QMenu
+from PyQt5.QtGui import QFont, QIcon, QColor, QPalette, QFontMetrics, QPainter, QTextOption, QPixmap
 from PyQt5 import QtCore
 
 from pitch_name import PitchName, PitchNamePlus1, PitchNamePlus2, PitchNameMinus1, PitchNameMinus2
 from pitch_etc_name import PitchEtcName
+
+css_content = None
 
 
 class Page(QWidget):
@@ -24,6 +27,8 @@ class Page(QWidget):
         self.page_layout = QGridLayout()
         self.setLayout(self.page_layout)
 
+        self.setContentsMargins(0, 0, 0, 0)
+
         self.page_layout.setSpacing(0)
         self.page_layout.setContentsMargins(0, 0, 0, 0)
         self.page_layout.setAlignment(QtCore.Qt.AlignJustify)
@@ -32,17 +37,20 @@ class Page(QWidget):
         self.jeonggan_grid.setSpacing(0)
         self.jeonggan_grid.setContentsMargins(0, 0, 0, 0)
 
-        self.page_layout.addWidget(TopPart(), 0, 0)
-        self.page_layout.addLayout(self.jeonggan_grid, 1, 0)
-        if title is True:
-            self.page_layout.addLayout(TitlePart(), 0, 1, 2, 1)
-        else:
-            self.page_layout.addWidget(NonTitlePart(), 0, 1, 2, 1)
+        self.page_layout.addLayout(LeftPart(), 0, 0)
+        self.page_layout.addWidget(BottomPart(), 1, 0, 1, 3)
 
         for i in range(gaks - 1, -1, -1):
             tmp_gak = Gak(num=4, _id=gaks - i - 1, parent=self)
             self.jeonggan_grid.addLayout(tmp_gak, 0, i)
             self.gaks_obj.append(tmp_gak)
+
+        self.page_layout.addLayout(self.jeonggan_grid, 0, 1)
+
+        if title is True:
+            self.page_layout.addLayout(TitlePart(), 0, 2)
+        else:
+            self.page_layout.addWidget(NonTitlePart(), 0, 2)
 
     def find_next_gak(self, _id: int):
         if _id == self.gaks - 1:
@@ -66,76 +74,143 @@ class Page(QWidget):
 
 
 class TopPart(QLabel):
-    css_content = None
-
-    def __init__(self, parent=None):
+    def __init__(self, parent: Page = None):
         super().__init__(parent)
         self.set_style()
 
         self.setMargin(0)
-        self.setFixedHeight(70)
+        self.setFixedHeight(70 - 8)
+        self.setFixedWidth(35 + 54)
+        self.setContentsMargins(0, 0, 0, 0)
 
     def set_style(self) -> None:
-        if TopPart.css_content is None:
+        global css_content
+        if css_content is None:
             with open("style.css", 'r') as f:
-                TopPart.css_content = f.read()
+                css_content = f.read()
 
-        self.setStyleSheet(TopPart.css_content)
+        self.setStyleSheet(css_content)
 
 
-class NonTitlePart(QLabel):
-    css_content = None
+class LeftPart(QVBoxLayout):
+    calc_width = None
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: Page = None):
         super().__init__()
         self.parent = parent
 
-        # subtitle font size
-        s_css_style = json_extract(TitlePart.css_content, "TitlePart", "left")
-        s_p = re.compile("font-size: ([0-9]+)pt;")
-        s_search_result = s_p.search(s_css_style)
+        self.setContentsMargins(0, 0, 0, 0)
 
-        s_font_size = 14  # default
-        if s_search_result is not None:
-            s_font_size = int(s_search_result.groups()[0])
+        width = 20
 
-        s_font = QFont("NanumGothic", s_font_size, QFont.Normal)
-        s_font_metrics = QFontMetrics(s_font)
-        s_px_from_pt = s_font_metrics.fontDpi() / 72 * s_font_size
-        print(s_px_from_pt)
+        tmp_label_0 = QLabel()
+        tmp_label_0.setObjectName("LeftPart0")
+        tmp_label_0.setFixedSize(width, 70 - 1)
+        self.addWidget(tmp_label_0)
 
-        # title font size
-        t_css_style = json_extract(TitlePart.css_content, "TitlePart", "right")  # title font size
-        t_p = re.compile("font-size: ([0-9]+)pt;")
-        t_search_result = t_p.search(t_css_style)
+        tmp_label_1 = QLabel()
+        tmp_label_1.setObjectName("LeftPart1")
+        tmp_label_1.setFixedSize(width, 66 * 12 + 1)
+        self.addWidget(tmp_label_1)
 
-        t_font_size = 24  # default
-        if t_search_result is not None:
-            t_font_size = int(t_search_result.groups()[0])
+        tmp_label_2 = QLabel()
+        tmp_label_2.setObjectName("LeftPart2")
+        tmp_label_2.setFixedSize(width, 8)
+        self.addWidget(tmp_label_2)
 
-        t_font = QFont("NanumGothic", t_font_size, QFont.Normal)
-        t_font_metrics = QFontMetrics(t_font)
-        t_px_from_pt = t_font_metrics.fontDpi() / 72 * t_font_size
-        print(t_px_from_pt)
+    def set_style(self) -> None:
+        global css_content
+        if css_content is None:
+            with open("style.css", 'r') as f:
+                css_content = f.read()
 
-        self.setFixedWidth(30 + round(s_px_from_pt + t_px_from_pt) + 60 - 35 - 54)
+        self.setStyleSheet(css_content)
+
+
+class BottomPart(QLabel):
+    calc_width = None
+
+    def __init__(self, parent: Page = None):
+        super().__init__()
+        self.parent = parent
+
+        self.setMargin(0)
+        self.setContentsMargins(0, 0, 0, 0)
+
+        self.setFixedHeight(20)
+
+    def set_style(self) -> None:
+        global css_content
+        if css_content is None:
+            with open("style.css", 'r') as f:
+                css_content = f.read()
+
+        self.setStyleSheet(css_content)
+
+
+class NonTitlePart(QLabel):
+    calc_width = None
+
+    def __init__(self, parent: Page = None):
+        super().__init__()
+        self.parent = parent
+
+        self.setMargin(0)
+        self.setContentsMargins(0, 0, 0, 0)
+
+        if NonTitlePart.calc_width is None:
+            global css_content
+            # subtitle font size
+            s_css_style = json_extract(css_content, "TitlePart", "left")
+            s_p = re.compile("font-size: ([0-9]+)pt;")
+            s_search_result = s_p.search(s_css_style)
+
+            s_font_size = 14  # default
+            if s_search_result is not None:
+                s_font_size = int(s_search_result.groups()[0])
+
+            s_font = QFont("NanumGothic", s_font_size, QFont.Normal)
+            s_font_metrics = QFontMetrics(s_font)
+            s_px_from_pt = s_font_metrics.fontDpi() / 72 * s_font_size
+            print(s_px_from_pt)
+
+            # title font size
+            t_css_style = json_extract(css_content, "TitlePart", "right")  # title font size
+            t_p = re.compile("font-size: ([0-9]+)pt;")
+            t_search_result = t_p.search(t_css_style)
+
+            t_font_size = 24  # default
+            if t_search_result is not None:
+                t_font_size = int(t_search_result.groups()[0])
+
+            t_font = QFont("NanumGothic", t_font_size, QFont.Normal)
+            t_font_metrics = QFontMetrics(t_font)
+            t_px_from_pt = t_font_metrics.fontDpi() / 72 * t_font_size
+
+            NonTitlePart.calc_width = 30 + int(s_px_from_pt + t_px_from_pt) + 60 - 35 - 54 - 1
+
+        self.setFixedWidth(NonTitlePart.calc_width)
 
         self.set_style()
 
     def set_style(self) -> None:
-        if NonTitlePart.css_content is None:
+        global css_content
+        if css_content is None:
             with open("style.css", 'r') as f:
-                NonTitlePart.css_content = f.read()
+                css_content = f.read()
 
-        self.setStyleSheet(NonTitlePart.css_content)
+        self.setStyleSheet(css_content)
 
 
 class TitlePartFrame(QFrame):
-    def __init__(self, parent=None):
+    def __init__(self, parent: Page = None):
         super().__init__()
         self.parent = parent
 
         self.setFrameShape(QFrame.Box)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
+        self.setContentsMargins(1, 1, 1, 1)
+        self.setFixedHeight(70 + 66 * 12 + 8)
 
     def mousePressEvent(self, event) -> None:
         position = event.pos()
@@ -147,12 +222,11 @@ class TitlePartFrame(QFrame):
 
 
 class TitlePart(QGridLayout):
-    css_content = None
-
-    def __init__(self, parent=None):
+    def __init__(self, parent: Page = None):
         super().__init__()
         self.setSpacing(0)
         self.setContentsMargins(0, 0, 0, 0)
+        self.parent = parent
 
         self.frame = TitlePartFrame(parent=self)
         self.addWidget(self.frame)
@@ -174,6 +248,8 @@ class TitlePart(QGridLayout):
 
         self.title_layout = QVBoxLayout()
         self.subtitle_layout = QVBoxLayout()
+        self.title_layout.setContentsMargins(0, 0, 0, 0)
+        self.subtitle_layout.setContentsMargins(0, 0, 0, 0)
         self.gridlayout.addLayout(self.subtitle_layout, 1, 1)
         self.gridlayout.addLayout(self.title_layout, 1, 2)
 
@@ -191,28 +267,30 @@ class TitlePart(QGridLayout):
         self.subtitle = "소제목 또는 작곡가"
         self.convert_vertical_rl(0, 0)
 
-    def set_style(self, obj, attr: str = None) -> None:
-        if TitlePart.css_content is None:
+    def set_style(self, obj: QLabel, attr: str = None) -> None:
+        global css_content
+        if css_content is None:
             with open("style.css", 'r') as f:
-                TitlePart.css_content = f.read()
+                css_content = f.read()
 
         if attr is None:
-            obj.setStyleSheet(TitlePart.css_content)
+            obj.setStyleSheet(css_content)
             return
 
         width_dict = {"left_margin": 30, "right_margin": 60}
         height_dict = {"top_margin": 100, "bottom_margin": 40}
+        font_size = {"left": 14, "right": 24}
 
         if attr in ["left_margin", "right_margin"]:
-            css_style = json_extract(TitlePart.css_content, "TitlePart", attr)
+            css_style = json_extract(css_content, "TitlePart", attr)
             obj.setStyleSheet(css_style)
             obj.setFixedWidth(width_dict[attr])
         elif attr in ["top_margin", "bottom_margin"]:
-            css_style = json_extract(TitlePart.css_content, "TitlePart", attr)
+            css_style = json_extract(css_content, "TitlePart", attr)
             obj.setStyleSheet(css_style)
             obj.setFixedHeight(height_dict[attr])
         elif attr in ["left", "right"]:  # subtitle, title
-            css_style = json_extract(TitlePart.css_content, "TitlePart", attr)
+            css_style = json_extract(css_content, "TitlePart", attr)
             obj.setStyleSheet(css_style)
 
     def dialog_open(self) -> None:
@@ -291,26 +369,449 @@ class TitlePart(QGridLayout):
             self.subtitle_layout.insertWidget(i + 1, tmp_label, alignment=QtCore.Qt.AlignVCenter | QtCore.Qt.AlignCenter)
 
 
-class Gasaran(QLabel):
-    css_content = None
+class Sumpyo(QLabel):
+    SIZE = {"up": (8, 8), "down": (8, 8)}
+    ICON_PATH = {"up": "image/sumpyo2.png", "down": "image/sumpyo2_down.png"}
 
-    def __init__(self, beats=1, parent=None):
-        super().__init__(parent)
+    def __init__(self, _id: int, label_type: str,
+                 is_first: bool = False, is_last: bool = False,
+                 is_bottom_border: bool = False, is_first_row: bool = False, parent: "Gasaran" = None):
+        super().__init__()
+        self.parent = parent
+
+        self.is_first = is_first
+        self.is_last = is_last
+        self.is_bottom_border = is_bottom_border
+        self.is_first_row = is_first_row
+
+        self.is_enabled = False
+
+        self.id = _id
+        self.label_type = label_type
         self.set_style()
 
         self.setMargin(0)
-        self.setFixedWidth(35)
+        self.setContentsMargins(0, 0, 0, 0)
+        self.setObjectName(label_type)
 
     def set_style(self) -> None:
-        if Gasaran.css_content is None:
+        global css_content
+        if css_content is None:
             with open("style.css", 'r') as f:
-                Gasaran.css_content = f.read()
+                css_content = f.read()
 
-        self.setStyleSheet(Gasaran.css_content)
+        if self.label_type is None:
+            self.setStyleSheet(css_content)
+            return
+        else:
+            self.setStyleSheet(css_content)
+
+        if self.label_type in ["up"]:
+            if self.is_first and self.is_bottom_border:
+                css_style = json_extract(css_content, "Sumpyo", self.label_type + "+first+bottom_border")
+            elif self.is_bottom_border:
+                css_style = json_extract(css_content, "Sumpyo", self.label_type + "+bottom_border")
+            else:
+                css_style = json_extract(css_content, "Sumpyo", self.label_type)
+            self.setStyleSheet(css_style)
+            self.setPixmap(QPixmap(Sumpyo.ICON_PATH[self.label_type]))
+            self.setFixedSize(*Sumpyo.SIZE[self.label_type])
+        elif self.label_type in ["down"]:
+            if self.is_last:
+                css_style = json_extract(css_content, "Sumpyo", self.label_type + "+last")
+            else:
+                css_style = json_extract(css_content, "Sumpyo", self.label_type)
+            self.setStyleSheet(css_style)
+            self.setPixmap(QPixmap(Sumpyo.ICON_PATH[self.label_type]))
+            self.setFixedSize(*Sumpyo.SIZE[self.label_type])
+
+        if not self.is_enabled:
+            self.clear()
+
+    def get_id(self) -> int:
+        return self.id
+
+    def mousePressEvent(self, event) -> None:
+        position = event.pos()
+        print(f"Clicked at position: {position.x()}, {position.y()}")
+        print(f"x: {self.geometry().x()}, y: {self.geometry().y()}, "
+              f"width: {self.geometry().width()}, height: {self.geometry().height()}")
+
+        self.click()
+
+    def click(self, is_me: bool = True):
+        if self.is_enabled:
+            self.clear()
+            self.is_enabled = False
+        else:
+            self.setPixmap(QPixmap(Sumpyo.ICON_PATH[self.label_type]))
+            self.is_enabled = True
+
+        if is_me:
+            if self.label_type == "up":
+                my_pos = self.parent.get_sumpyo_pos(self.id)
+
+                if my_pos == self.parent.get_max_sumpyo() - 1:
+                    next_gang = self.parent.parent.parent.find_next_gang(self.parent.parent.get_id())
+                    next_gasaran = next_gang.get_gasaran()
+                    next_gasaran.get_sumpyos(0).click(is_me=False)
+                else:
+                    self.parent.get_sumpyos(my_pos + 1).click(is_me=False)
+            elif self.label_type == "down":
+                my_pos = self.parent.get_sumpyo_pos(self.id)
+
+                if my_pos == 0:
+                    prev_gang = self.parent.parent.parent.find_prev_gang(self.parent.parent.get_id())
+                    prev_gasaran = prev_gang.get_gasaran()
+                    prev_gasaran_max = prev_gasaran.get_max_sumpyo()
+                    prev_gasaran.get_sumpyos(prev_gasaran_max - 1).click(is_me=False)
+                else:
+                    self.parent.get_sumpyos(my_pos - 1).click(is_me=False)
+
+
+class Sigimsae(QLabel):
+    ICON_PATH = {"araero_ddeoneun_pyo": "image/sigimsae/araero_ddeoneun_pyo.png",
+                 "araero_ddeoneun_pyo_bottom": "image/sigimsae/araero_ddeoneun_pyo_bottom.png",
+
+                 "gyop_heullim_pyo": "image/sigimsae/gyop_heullim_pyo.png",
+                 "gyop_heullim_pyo_bottom": "image/sigimsae/gyop_heullim_pyo.png",
+
+                 "gyop_mineun_pyo": "image/sigimsae/gyop_mineun_pyo.png",
+                 "gyop_mineun_pyo_bottom": "image/sigimsae/gyop_mineun_pyo.png",
+
+                 "heullim_pyo1": "image/sigimsae/heullim_pyo1.png",
+                 "heullim_pyo1_bottom": "image/sigimsae/heullim_pyo1.png",
+                 "heullim_pyo2": "image/sigimsae/heullim_pyo2.png",
+                 "heullim_pyo2_bottom": "image/sigimsae/heullim_pyo2_bottom.png",
+                 "heullim_pyo3": "image/sigimsae/heullim_pyo3.png",
+                 "heullim_pyo3_bottom": "image/sigimsae/heullim_pyo3_bottom.png",
+
+                 "mineun_pyo1": "image/sigimsae/mineun_pyo1.png",
+                 "mineun_pyo1_bottom": "image/sigimsae/mineun_pyo1.png",
+                 "mineun_pyo2": "image/sigimsae/mineun_pyo2.png",
+                 "mineun_pyo2_bottom": "image/sigimsae/mineun_pyo2_bottom.png",
+                 "mineun_pyo3": "image/sigimsae/mineun_pyo3.png",
+                 "mineun_pyo3_bottom": "image/sigimsae/mineun_pyo3_bottom.png",
+
+                 "nongeum1": "image/sigimsae/nongeum1.png", "nongeum1_bottom": "image/sigimsae/nongeum1_bottom.png",
+                 "nongeum2": "image/sigimsae/nongeum2.png", "nongeum2_bottom": "image/sigimsae/nongeum2_bottom.png",
+                 "nongeum3": "image/sigimsae/nongeum3.png", "nongeum3_bottom": "image/sigimsae/nongeum3_bottom.png",
+                 "nongeum4": "image/sigimsae/nongeum4.png", "nongeum4_bottom": "image/sigimsae/nongeum4_bottom.png",
+                 "nongeum5": "image/sigimsae/nongeum5.png", "nongeum5_bottom": "image/sigimsae/nongeum5_bottom.png",
+                 "nongeum6": "image/sigimsae/nongeum6.png", "nongeum6_bottom": "image/sigimsae/nongeum6_bottom.png",
+                 "nongeum7": "image/sigimsae/nongeum7.png", "nongeum7_bottom": "image/sigimsae/nongeum7_bottom.png",
+                 "nongeum8": "image/sigimsae/nongeum8.png", "nongeum8_bottom": "image/sigimsae/nongeum8_bottom.png",
+
+                 "pureo_naerinuen_pyo": "image/sigimsae/pureo_naerinuen_pyo.png",
+                 "pureo_naerinuen_pyo_bottom": "image/sigimsae/pureo_naerinuen_pyo_bottom.png",
+
+                 "wiro_ddeoneun_pyo": "image/sigimsae/wiro_ddeoneun_pyo.png",
+                 "wiro_ddeoneun_pyo_bottom": "image/sigimsae/wiro_ddeoneun_pyo_bottom.png"}
+
+    ICON_PLACEMENT = [["araero_ddeoneun_pyo", "gyop_heullim_pyo", "gyop_mineun_pyo"],
+
+                      ["heullim_pyo1", "heullim_pyo2", "heullim_pyo3"],
+
+                      ["mineun_pyo1", "mineun_pyo2", "mineun_pyo3"],
+
+                      ["nongeum1", "nongeum2", "nongeum3"],
+                      ["nongeum4", "nongeum5", "nongeum6"],
+                      ["nongeum7", "nongeum8", "wiro_ddeoneun_pyo"],
+
+                      ["pureo_naerinuen_pyo",  "nongeum3", "nongeum3"]]
+
+    current_pos = None
+    opened_dialog: list[QDialog] = []
+
+    def __init__(self, _id: int, is_bottom_border: bool = False, is_first_row: bool = False,
+                 parent: "Gasaran" = None):
+        super().__init__()
+        self.parent = parent
+
+        self.is_bottom_border = is_bottom_border
+        self.is_first_row = is_first_row
+        self.id = _id
+        self.label_type = None
+
+        self.set_style(self)
+
+        self.dialog = None
+
+        self.setMargin(0)
+        self.setContentsMargins(0, 0, 0, 0)
+
+        self.set_sigimsae(self)
+
+    def set_style(self, obj: QLabel) -> None:
+        global css_content
+        if css_content is None:
+            with open("style.css", 'r') as f:
+                css_content = f.read()
+
+        obj.setStyleSheet(css_content)
+
+        if self.is_bottom_border:
+            css_style = json_extract(css_content, "Sigimsae", "bottom_border")
+            obj.setStyleSheet(css_style)
+        # obj.setPixmap(QPixmap(icon_path[attr]))
+        obj.setFixedSize(35 - 8, 66 // 3)
+
+        # if attr in ["up"]:
+
+    def get_id(self) -> int:
+        return self.id
+
+    @staticmethod
+    def set_sigimsae(obj: "Sigimsae") -> None:
+        obj.clear()
+        if obj.label_type is not None:
+            if obj.is_bottom_border:
+                obj.setPixmap(QPixmap(Sigimsae.ICON_PATH[obj.label_type + "_bottom"]))
+            else:
+                obj.setPixmap(QPixmap(Sigimsae.ICON_PATH[obj.label_type]))
+        else:
+            obj.clear()
+
+    def mousePressEvent(self, event) -> None:
+        position = event.pos()
+        print(f"Clicked at position: {position.x()}, {position.y()}")
+        print(f"x: {self.geometry().x()}, y: {self.geometry().y()}, "
+              f"width: {self.geometry().width()}, height: {self.geometry().height()}")
+
+        for dialog in Sigimsae.opened_dialog:
+            dialog.close()
+            dialog.deleteLater()
+        Sigimsae.opened_dialog.clear()
+
+        self.dialog_open()
+
+    def dialog_open(self) -> None:
+        self.dialog = QDialog()
+        Sigimsae.opened_dialog.append(self.dialog)
+
+        dialog_layout = QVBoxLayout()
+        sigimsae_grid = QGridLayout()
+        sigimsae_grid.setContentsMargins(0, 0, 0, 0)
+        dialog_layout.addLayout(sigimsae_grid)
+
+        sigimsae_buttons: list[QPushButton] = []
+
+        Sigimsae.current_pos = self
+
+        col = 0
+        for col_item in Sigimsae.ICON_PLACEMENT:
+            row = 0
+            for item in col_item:
+                sigimsae_button = QPushButton()
+                sigimsae_button.setIcon(QIcon(Sigimsae.ICON_PATH[item]))
+                sigimsae_button.setToolTip(item)
+                sigimsae_button.setFixedSize(27, 22)
+                sigimsae_button.setContentsMargins(0, 0, 0, 0)
+                sigimsae_buttons.append(sigimsae_button)
+                sigimsae_grid.addWidget(sigimsae_button, row, col)
+
+                row += 1
+
+            col += 1
+
+        for button_item in sigimsae_buttons:
+            tmp_str = button_item.toolTip()
+            button_item.clicked.connect(
+                lambda _, s=tmp_str: self.apply_sigimsae(obj=Sigimsae.current_pos, label_type=s)
+            )
+
+        apply_cancel_layout = QHBoxLayout()
+        apply_cancel_layout.setAlignment(QtCore.Qt.AlignHCenter)
+        dialog_layout.addLayout(apply_cancel_layout)
+
+        apply_button = QPushButton("확인")
+        apply_button.clicked.connect(self.dialog.close)
+        cancel_button = QPushButton("삭제")
+        cancel_button.clicked.connect(
+            lambda _: self.delete_sigimsae(obj=Sigimsae.current_pos)
+        )
+
+        apply_cancel_layout.addWidget(apply_button, alignment=QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        apply_cancel_layout.addWidget(cancel_button, alignment=QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+
+        self.dialog.setLayout(dialog_layout)
+        self.dialog.setWindowTitle("시김새 넣기")
+        self.dialog.setMinimumWidth(300)
+        self.dialog.show()
+
+    @staticmethod
+    def apply_sigimsae(obj: "Sigimsae", label_type: str = None) -> None:
+        if label_type is not None:
+            obj.label_type = label_type
+        obj.set_sigimsae(obj)
+
+        my_pos = obj.parent.get_sigimsae_pos(obj.id)
+
+        if my_pos == obj.parent.get_max_sigimsae() - 1:
+            next_gang = obj.parent.parent.parent.find_next_gang(obj.parent.parent.get_id())
+            next_gasaran = next_gang.get_gasaran()
+            Sigimsae.current_pos = next_gasaran.get_sigimsaes(0)
+        else:
+            Sigimsae.current_pos = obj.parent.get_sigimsaes(my_pos + 1)
+
+    @staticmethod
+    def delete_sigimsae(obj: "Sigimsae") -> None:
+        obj.label_type = None
+        obj.set_sigimsae(obj)
+
+        my_pos = obj.parent.get_sigimsae_pos(obj.id)
+
+        if my_pos == obj.parent.get_max_sigimsae() - 1:
+            next_gang = obj.parent.parent.parent.find_next_gang(obj.parent.parent.get_id())
+            next_gasaran = next_gang.get_gasaran()
+            Sigimsae.current_pos = next_gasaran.get_sigimsaes(0)
+        else:
+            Sigimsae.current_pos = obj.parent.get_sigimsaes(my_pos + 1)
+
+
+class Gasaran(QHBoxLayout):
+    def __init__(self, num: int = 1, parent: "Gang" = None):
+        super().__init__()
+        # self.set_style()
+
+        self.setSpacing(0)
+        self.setContentsMargins(0, 0, 0, 0)
+
+        # self.setText("＜")
+
+        self.parent = parent
+        self.num = num
+        self.sigimsaes: list[Sigimsae] = list()
+        self.sumpyos: list[Sumpyo] = list()
+
+        self.sumpyos_layout = QVBoxLayout()
+        self.sumpyos_layout.setContentsMargins(0, 0, 0, 0)
+        self.sumpyos_layout.setSpacing(0)
+
+        self.sigimsae_layout = QVBoxLayout()
+        self.sigimsae_layout.setContentsMargins(0, 0, 0, 0)
+        self.sigimsae_layout.setSpacing(0)
+
+        self.addLayout(self.sumpyos_layout)
+        self.addLayout(self.sigimsae_layout)
+
+        #    8(시작부)              22
+        #    1
+        #    16(1/3 부분)
+        # 66 16(1/2 부분)           22
+        #    16(2/3 부분)
+        #    1
+        #    8(종료부)              22
+        # ---------------------------------------------
+        #        8              19      +       8
+        #                    35
+
+        self._id_sumpyo_count = 0
+        self._id_sigimsae_count = 0
+
+        for i in range(num):
+            self.sumpyos.append(Sumpyo(label_type="down", _id=self._id_sumpyo_count, parent=self))
+            self.sumpyos_layout.addWidget(self.sumpyos[-1], 0 + 10 * i)
+            self._id_sumpyo_count += 1
+
+            self.sumpyos_layout.addWidget(self.setting_form("sumpyo_yeobaek"), 1 + 10 * i)
+
+            for j in range(3):
+                self.sumpyos.append(Sumpyo(label_type="up", _id=self._id_sumpyo_count, parent=self))
+                self.sumpyos_layout.addWidget(self.sumpyos[-1], 2 + 2 * j + 10 * i)
+                self._id_sumpyo_count += 1
+                self.sumpyos.append(Sumpyo(label_type="down", _id=self._id_sumpyo_count, parent=self))
+                self.sumpyos_layout.addWidget(self.sumpyos[-1], 3 + 2 * j + 10 * i)
+                self._id_sumpyo_count += 1
+
+            self.sumpyos_layout.addWidget(self.setting_form("sumpyo_yeobaek"), 8 + 10 * i)
+            self.sumpyos.append(Sumpyo(label_type="up", _id=self._id_sumpyo_count,
+                                       is_bottom_border=(i == num - 1), parent=self))
+            self.sumpyos_layout.addWidget(self.sumpyos[-1], 9 + 10 * i)
+            self._id_sumpyo_count += 1
+
+            for k in range(2):
+                self.sigimsaes.append(Sigimsae(_id=self._id_sigimsae_count, parent=self))
+                self.sigimsae_layout.addWidget(self.sigimsaes[-1], 3 * i + k)
+                self._id_sigimsae_count += 1
+
+            self.sigimsaes.append(Sigimsae(_id=self._id_sigimsae_count, is_bottom_border=(i == num - 1), parent=self))
+            self.sigimsae_layout.addWidget(self.sigimsaes[-1], 3 * i + 2)
+            self._id_sigimsae_count += 1
+
+    def setting_form(self, label_type: str) -> QLabel:
+        size = {"sumpyo_yeobaek": (8, 1), "sigimsae": (35 - 8, 66 // 3)}
+        icon_path = {"sumpyo_yeobaek": None, "sigimsae": None}
+
+        tmp_label = QLabel()
+        tmp_label.setMargin(0)
+        tmp_label.setContentsMargins(0, 0, 0, 0)
+        tmp_label.setObjectName(label_type)
+        tmp_label.setFixedSize(*size[label_type])
+
+        if icon_path[label_type] is not None:
+            tmp_label.setPixmap(QPixmap(icon_path[label_type]))
+
+        if label_type in ["sigimsaes"]:
+            self.sigimsaes.append(tmp_label)
+
+        return tmp_label
+
+    def set_style(self) -> None:
+        global css_content
+        if css_content is None:
+            with open("style.css", 'r') as f:
+                css_content = f.read()
+
+        self.setStyleSheet(css_content)
+
+    def get_sumpyos(self, pos: int) -> Sumpyo:
+        return self.sumpyos[pos]
+
+    def get_sumpyo_pos(self, _id: int) -> int:
+        for i in range(len(self.sumpyos)):
+            if self.sumpyos[i].get_id() == _id:
+                return i
+        else:
+            raise IndexError(f"{self.get_sumpyo_pos.__name__}: "
+                             f"요청한 id 값이 해당 객체에 존재하지 않습니다({_id}).")
+
+    def get_max_sumpyo(self) -> int:
+        return len(self.sumpyos)
+
+    def insert_sumpyos_pos(self, pos: int, label_type: str,
+                 is_first: bool = False, is_last: bool = False,
+                 is_bottom_border: bool = False, is_first_row: bool = False, parent: "Gasaran" = None) -> None:
+        self.sumpyos.insert(pos, Sumpyo(label_type=label_type, _id=self._id_sumpyo_count,
+                                   is_first=is_first, is_last=is_last,
+                                   is_bottom_border=is_bottom_border, is_first_row=is_first_row, parent=parent))
+        self._id_sumpyo_count += 1
+
+    def append_sumpyos(self, label_type: str,
+                 is_first: bool = False, is_last: bool = False,
+                 is_bottom_border: bool = False, is_first_row: bool = False, parent: "Gasaran" = None) -> None:
+        self.sumpyos.append(Sumpyo(label_type=label_type, _id=self._id_sumpyo_count,
+                                   is_first=is_first, is_last=is_last,
+                                   is_bottom_border=is_bottom_border, is_first_row=is_first_row, parent=parent))
+        self._id_sumpyo_count += 1
+
+    def get_sigimsae_pos(self, _id: int) -> int:
+        for i in range(len(self.sigimsaes)):
+            if self.sigimsaes[i].get_id() == _id:
+                return i
+        else:
+            raise IndexError(f"{self.get_sigimsae_pos.__name__}: "
+                             f"요청한 id 값이 해당 객체에 존재하지 않습니다({_id}).")
+
+    def get_max_sigimsae(self) -> int:
+        return len(self.sigimsaes)
+
+    def get_sigimsaes(self, pos: int) -> Sigimsae:
+        return self.sigimsaes[pos]
 
 
 class Gak(QGridLayout):  # Gang * n
-    def __init__(self, num=3, _id=None, parent=None):
+    def __init__(self, num=3, _id=None, parent: Page = None):
         super().__init__()
         self.parent = parent
         self.id = _id
@@ -318,13 +819,18 @@ class Gak(QGridLayout):  # Gang * n
         self.gangs = num
         self.gangs_obj = []  # list(QgridLayout)
 
-        self.setSpacing(0)
         self.setContentsMargins(0, 0, 0, 0)
 
         for i in range(num):
-            tmp_label = Gang(num=3, _id=i, parent=self)
+            tmp_label = None
+            if i == 0:
+                tmp_label = Gang(num=3, _id=i, is_first=True, is_last=False, parent=self)
+            elif i == num - 1:
+                tmp_label = Gang(num=3, _id=i, is_first=False, is_last=True, parent=self)
+            else:
+                tmp_label = Gang(num=3, _id=i, is_first=False, is_last=False, parent=self)
             self.gangs_obj.append(tmp_label)
-            self.addLayout(tmp_label, i, 1)
+            self.addLayout(tmp_label, i, 0)
 
     def get_max_gang(self):
         return self.gangs - 1
@@ -345,13 +851,13 @@ class Gak(QGridLayout):  # Gang * n
             if prev_gak.id == self.id:  # not prev
                 return self.gangs_obj[_id]
             else:  # prev
-                return prev_gak.gangs_obj[prev_gak.get_max_gang()]
+                return prev_gak.gangs_obj[prev_gak.gangs - 1]
         else:
             return self.gangs_obj[_id - 1]
 
 
 class Gang(QGridLayout):  # Gasaran + Jeonggan * n
-    def __init__(self, num=3, _id=None, parent=None):
+    def __init__(self, num=3, _id=None, is_first: bool = False, is_last: bool = False, parent: Gak = None):
         super().__init__()
         self.parent = parent
         self.id = _id
@@ -362,12 +868,88 @@ class Gang(QGridLayout):  # Gasaran + Jeonggan * n
         self.setSpacing(0)
         self.setContentsMargins(0, 0, 0, 0)
 
-        self.addWidget(Gasaran(), 0, 0, num, 1)
+        self.gasaran = Gasaran(num=num, parent=self)
+
+        jeonggan_start_point = 0
+
+        self.is_first = is_first
+        self.is_last = is_last
+
+        if is_first:
+            self.addWidget(TopPart(), 0, 0, 1, 2)
+
+            self.addWidget(self.setting_form("first_top_left"), 1, 0)
+
+            sumpyo_and_right_down = QHBoxLayout()
+            sumpyo_and_right_down.setContentsMargins(0, 0, 0, 0)
+            sumpyo_and_right_down.setSpacing(0)
+
+            self.gasaran.insert_sumpyos_pos(0, label_type="up",
+                                            is_first=True, is_bottom_border=True, parent=self.gasaran)
+            sumpyo_and_right_down.addWidget(self.gasaran.get_sumpyos(0))
+
+            sumpyo_and_right_down.addWidget(self.setting_form("first_top_right"))
+
+            self.addLayout(sumpyo_and_right_down, 1, 1)
+
+            jeonggan_start_point = 2
+
         for i in range(num):
             tmp_label = Jeonggan(row=1, _id=i, parent=self)
 
             self.jeonggans_obj.append(tmp_label)
-            self.addLayout(tmp_label, i, 1)
+            self.addLayout(tmp_label, i + jeonggan_start_point, 0)
+
+        # self.addWidget(Gasaran(), 0, 1, num, 1)
+        self.addLayout(self.gasaran, jeonggan_start_point, 1, num, 1)
+
+        if is_last:
+            self.addWidget(self.setting_form("last_bottom_left"), num + jeonggan_start_point, 0)
+
+            sumpyo_and_right_down_last = QHBoxLayout()
+            sumpyo_and_right_down_last.setContentsMargins(0, 0, 0, 0)
+            sumpyo_and_right_down_last.setSpacing(0)
+
+            self.gasaran.append_sumpyos(label_type="down", is_last=True, parent=self.gasaran)
+            sumpyo_and_right_down_last.addWidget(self.gasaran.get_sumpyos(-1))
+
+            if _id == 0:  # the first row
+                sumpyo_and_right_down_last.addWidget(self.setting_form("last_bottom_right_id0"))
+            else:
+                sumpyo_and_right_down_last.addWidget(self.setting_form("last_bottom_right"))
+            self.addLayout(sumpyo_and_right_down_last, num + jeonggan_start_point, 1)
+
+    def setting_form(self, label_type: str) -> QLabel:
+        size = {"sumpyo_up": (8, 8), "sumpyo_down": (8, 8),
+                "sumpyo_up_for_first": (8, 8), "sumpyo_down_for_last": (8, 8),
+                "first_top_left": (54, 8), "first_top_right": (35 - 8, 8),
+                "last_bottom_left": (54, 8), "last_bottom_right": (35 - 8, 8),
+                "last_bottom_right_id0": (35 - 8, 8)}
+        icon_path = {"sumpyo_up": "image/sumpyo2.png", "sumpyo_down": "image/sumpyo2_down.png",
+                     "sumpyo_up_for_first": "image/sumpyo2.png", "sumpyo_down_for_last": "image/sumpyo2_down.png",
+                     "first_top_left": None, "first_top_right": None,
+                     "last_bottom_left": None, "last_bottom_right": None,
+                     "last_bottom_right_id0": None}
+
+        tmp_label = QLabel()
+        tmp_label.setMargin(0)
+        tmp_label.setContentsMargins(0, 0, 0, 0)
+        tmp_label.setObjectName(label_type)
+        tmp_label.setFixedSize(*size[label_type])
+
+        if icon_path[label_type] is not None:
+            tmp_label.setPixmap(QPixmap(icon_path[label_type]))
+
+        if label_type in ["sumpyo_up", "sumpyo_down", "sumpyo_up_for_first", "sumpyo_down_for_last"]:
+            self.gasaran.sumpyos.append(tmp_label)
+
+        return tmp_label
+
+    def get_id(self) -> int:
+        return self.id
+
+    def get_gasaran(self) -> Gasaran:
+        return self.gasaran
 
     def get_max_jeonggan(self):
         return self.jeonggans - 1
@@ -400,7 +982,7 @@ class Gang(QGridLayout):  # Gasaran + Jeonggan * n
 
 
 class Jeonggan(QGridLayout):
-    def __init__(self, row=1, _id=None, parent=None):
+    def __init__(self, row=1, _id: int = None, parent: Gang = None):
         super().__init__()
         self.parent = parent
         self.id = _id
@@ -424,10 +1006,10 @@ class Jeonggan(QGridLayout):
     def get_rows(self) -> int:
         return self.rows
 
-    def append(self, row: int):
+    def append(self, row: int) -> "Kan":
         return self.insert(row, self.kans[row])
 
-    def insert(self, row: int, col: int):
+    def insert(self, row: int, col: int) -> "Kan":
         if row < 0:
             raise IndexError(f"{self.insert.__name__}: "
                              f"row 값이 0보다 작습니다({row}).")
@@ -475,10 +1057,10 @@ class Jeonggan(QGridLayout):
 
         return self.kans_obj[row][col]
 
-    def append_row(self):
+    def append_row(self) -> "kan":
         return self.insert_row(self.rows)
 
-    def insert_row(self, row_pos: int):
+    def insert_row(self, row_pos: int) -> "Kan":
         for i in range(self.rows):
             self.removeItem(self.rows_obj[i])
 
@@ -524,6 +1106,7 @@ class Jeonggan(QGridLayout):
         for i in self.kans_obj[row]:
             self.rows_obj[row].removeWidget(i)
 
+        self.kans_obj[row][col].deleteLater()
         del self.kans_obj[row][col]
         self.kans[row] -= 1
 
@@ -568,7 +1151,7 @@ class Jeonggan(QGridLayout):
         for i in range(self.rows):
             self.addLayout(self.rows_obj[i], i, 0)
 
-    def extend_1_to_2(self):
+    def extend_1_to_2(self) -> "Kan":
         if self.rows != 1:
             raise IndexError(f"{self.extend_1_to_2.__name__}: "
                              f"row 값이 1이 아닙니다({self.rows}).")
@@ -581,7 +1164,7 @@ class Jeonggan(QGridLayout):
 
         return self.kans_obj[1][0]
 
-    def extend_2_to_3(self):
+    def extend_2_to_3(self) -> "Kan":
         if self.rows != 2:
             raise IndexError(f"{self.extend_2_to_3.__name__}: "
                              f"row 값이 2가 아닙니다({self.rows}).")
@@ -598,7 +1181,7 @@ class Jeonggan(QGridLayout):
 
         return self.kans_obj[2][0]
 
-    def extend_3_to_4(self):
+    def extend_3_to_4(self) -> "Kan":
         if self.rows != 3:
             raise IndexError(f"{self.extend_3_to_4.__name__}: "
                              f"row 값이 3이 아닙니다({self.rows}).")
@@ -627,7 +1210,7 @@ class Jeonggan(QGridLayout):
 
         return self.kans_obj[1][1]
 
-    def extend_4_to_5(self):
+    def extend_4_to_5(self) -> "Kan":
         if self.rows != 2:
             raise IndexError(f"{self.extend_4_to_5.__name__}: "
                              f"row 값이 2가 아닙니다({self.rows}).")
@@ -644,7 +1227,7 @@ class Jeonggan(QGridLayout):
 
         return self.kans_obj[2][0]
 
-    def extend_5_to_6(self):
+    def extend_5_to_6(self) -> "Kan":
         if self.rows != 3:
             raise IndexError(f"{self.extend_5_to_6.__name__}: "
                              f"row 값이 3이 아닙니다({self.rows}).")
@@ -798,9 +1381,11 @@ class Jeonggan(QGridLayout):
 class Kan(QLabel):
     count = 0
     clicked_obj = None
-    css_content = None
 
     key_mapping = None
+
+    JANGSIKEUM = ["nire", "nira", "none", "neone", "noniro", "nanireu", "neuronireu", "nanina",
+                  "naneuna", "neunireu", "ni", "ri", "no", "ro", "nina"]
 
     def __init__(self, rows=0, cols=0, is_first: bool = False, is_last: bool = False,
                  parent: Jeonggan = None):
@@ -810,6 +1395,7 @@ class Kan(QLabel):
         self.is_last = is_last
         self.parent = parent
 
+        self.is_empty = True
         self.id = Kan.count
         Kan.count += 1
         if Kan.clicked_obj is None:
@@ -821,15 +1407,37 @@ class Kan(QLabel):
         self.set_style()
 
         self.setMargin(0)
+        self.setContentsMargins(0, 0, 0, 0)
 
         self.setText("")
 
         self.isClicked = False
 
-    def set_style(self):
-        if Kan.css_content is None:
+        self.menu = QMenu()
+        self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+
+        for key in Kan.JANGSIKEUM:
+            action = QAction(key, self)
+            action.setIcon(QIcon(f"image/jangsikeum/{key}.png"))
+            action.triggered.connect(lambda _, l=key: self.set_jangsikeun(label_type=l))
+            self.menu.addAction(action)
+
+        self.customContextMenuRequested.connect(self.show_context_menu)
+
+    def show_context_menu(self, pos) -> None:
+        print(pos)
+        self.menu.exec_(self.mapToGlobal(pos))
+
+    def set_jangsikeun(self, label_type: str) -> None:
+        self.clear()
+        self.setPixmap(QPixmap(f"image/jangsikeum/{label_type}.png"))
+        self.is_empty = False
+
+    def set_style(self) -> None:
+        global css_content
+        if css_content is None:
             with open("style.css", 'r') as f:
-                Kan.css_content = f.read()
+                css_content = f.read()
 
         font_size = 16
 
@@ -840,9 +1448,9 @@ class Kan(QLabel):
         elif max(self.rows, self.cols) == 3:
             font_size = 14
 
-        css_clicked = json_extract(Kan.css_content, "Kan", "clicked")
-        css_first = json_extract(Kan.css_content, "Kan", "first")
-        css_last = json_extract(Kan.css_content, "Kan", "last")
+        css_clicked = json_extract(css_content, "Kan", "clicked")
+        css_first = json_extract(css_content, "Kan", "first")
+        css_last = json_extract(css_content, "Kan", "last")
 
         stylesheet = f"font-size: {font_size}pt;"
 
@@ -852,8 +1460,9 @@ class Kan(QLabel):
         if self.is_last:
             stylesheet += css_last
 
-        if Kan.clicked_obj.id == self.id:
-            stylesheet += css_clicked
+        if Kan.clicked_obj is not None:
+            if Kan.clicked_obj.id == self.id:
+                stylesheet += css_clicked
 
         self.setStyleSheet(stylesheet)
 
@@ -944,8 +1553,9 @@ class Kan(QLabel):
                 else:  # 음표가 아님
                     note = pitchname_member.value
 
-                if self.text() in ["O", ""]:  # insert
+                if self.is_empty:  # insert
                     self.setText(note)
+                    self.is_empty = False
                     next_kan = self.parent.find_next_kan(self.id)
                 else:  # insert & append
                     # 1 beat -> 2 beats
@@ -1003,6 +1613,7 @@ class Kan(QLabel):
                             next_kan = self.parent.find_next_kan(self.id)
 
                     next_kan.setText(note)
+                    next_kan.is_empty = False
 
                     if next_kan is None:
                         raise Exception(f"{self.input_by_keyboard.__name__}: 다음 칸 정보가 없습니다.")
@@ -1033,6 +1644,8 @@ class Kan(QLabel):
 
             elif key in Kan.key_mapping["DELETE"]:
                 self.setText("")
+                self.clear()
+                self.is_empty = True
 
             elif key in Kan.key_mapping["ERASE"]:
                 if self.parent.get_max_kan(self.parent.find_kan(self.id)[0])[1] == 0:
@@ -1041,6 +1654,8 @@ class Kan(QLabel):
                         self.parent.erase_row(self.parent.find_kan(self.id)[0])
                     else:  # deletion instead of erasing
                         self.setText("")
+                        self.clear()
+                        self.is_empty = True
                         (self.parent.find_prev_kan(self.id)).click()
                 else:
                     (self.parent.find_prev_kan(self.id)).click()
