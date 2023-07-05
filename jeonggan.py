@@ -1386,7 +1386,8 @@ class Kan(QLabel):
 
     key_mapping = None
 
-    JANGSIKEUM_PATH = {"nire": "image/jangsikeum/nire.png"}
+    JANGSIKEUM = ["nire", "nira", "none", "neone", "noniro", "nanireu", "neuronireu", "nanina",
+                  "naneuna", "neunireu", "ni", "ri", "no", "ro", "nina"]
 
     def __init__(self, rows=0, cols=0, is_first: bool = False, is_last: bool = False,
                  parent: Jeonggan = None):
@@ -1417,9 +1418,9 @@ class Kan(QLabel):
         self.menu = QMenu()
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
 
-        for key, value in Kan.JANGSIKEUM_PATH.items():
+        for key in Kan.JANGSIKEUM:
             action = QAction(key, self)
-            action.setIcon(QIcon(value))
+            action.setIcon(QIcon(f"image/jangsikeum/{key}.png"))
             action.triggered.connect(lambda _, l=key: self.set_jangsikeun(label_type=l))
             self.menu.addAction(action)
 
@@ -1431,7 +1432,7 @@ class Kan(QLabel):
 
     def set_jangsikeun(self, label_type: str) -> None:
         self.clear()
-        self.setPixmap(QPixmap(Kan.JANGSIKEUM_PATH[label_type]))
+        self.setPixmap(QPixmap(f"image/jangsikeum/{label_type}.png"))
         self.is_empty = False
 
     def set_style(self) -> None:
