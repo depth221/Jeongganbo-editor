@@ -36,6 +36,7 @@ class MyApp(QMainWindow):
         self.scroll_area.setWidget(self.main_widget)
 
         self.potential_error_in_exporting_page: list[str] = []
+        self.is_saved = True
 
         self.init_ui()
 
@@ -90,7 +91,7 @@ class MyApp(QMainWindow):
         exitAction = QAction(QIcon('image/exit.svg'), 'Exit', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
-        exitAction.triggered.connect(qApp.quit)
+        exitAction.triggered.connect(self.close)
 
         filemenu.addAction(exitAction)
 
@@ -313,6 +314,17 @@ class MyApp(QMainWindow):
                                     ', '.join(self.potential_error_in_exporting_page) + "쪽을 확인해 보세요.")
 
             self.potential_error_in_exporting_page.clear()
+
+    def closeEvent(self, event):
+        if self.is_saved:
+            event.accept()
+        else:
+            exit_result = QMessageBox.question(None, "아직 저장하지 않음", "변경 내역을 저장하지 않았습니다. 정말 종료하시겠습니까?",
+                                               QMessageBox.Yes | QMessageBox.No)
+            if exit_result == QMessageBox.Yes:
+                event.accept()
+            else:
+                event.ignore()
 
 
 if __name__ == '__main__':

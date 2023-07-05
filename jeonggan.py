@@ -15,7 +15,7 @@ css_content = None
 
 
 class Page(QWidget):
-    def __init__(self, gaks: int = 6, title: bool = False, _id: int = None, parent=None):
+    def __init__(self, gaks: int = 6, title: bool = False, _id: int = None, parent: QMainWindow = None):
         super().__init__()
 
         self.parent = parent
@@ -48,7 +48,7 @@ class Page(QWidget):
         self.page_layout.addLayout(self.jeonggan_grid, 0, 1)
 
         if title is True:
-            self.page_layout.addLayout(TitlePart(), 0, 2)
+            self.page_layout.addLayout(TitlePart(parent=self), 0, 2)
         else:
             self.page_layout.addWidget(NonTitlePart(), 0, 2)
 
@@ -338,6 +338,8 @@ class TitlePart(QGridLayout):
         self.dialog.deleteLater()
         self.dialog = QDialog()
 
+        self.parent.parent.is_saved = False
+
         self.dialog.close()
 
     def convert_vertical_rl(self, title_layout_size: int = None, subtitle_layout_size: int = None) -> None:
@@ -582,6 +584,8 @@ class Sigimsae(QLabel):
             dialog.close()
             dialog.deleteLater()
         Sigimsae.opened_dialog.clear()
+
+        self.parent.parent.parent.parent.parent.is_saved = False
 
         self.dialog_open()
 
@@ -1513,6 +1517,7 @@ class Kan(QLabel):
                 Kan.key_mapping = json.load(f)
 
         print("Key Pressed:", key)
+        self.parent.parent.parent.parent.parent.is_saved = False
 
         max_kan_row, max_kan_col = self.parent.get_max_kan()
         my_row, my_col = self.parent.find_kan(self.id)
