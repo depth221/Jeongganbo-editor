@@ -472,7 +472,57 @@ class Sumpyo(QLabel):
 
 
 class Sigimsae(QLabel):
-    ICON_PATH = {"nongeum": "image/heullim_pyo1.png", "nongeum_bottom": "image/heullim_pyo1.png"}
+    ICON_PATH = {"araero_ddeoneun_pyo": "image/sigimsae/araero_ddeoneun_pyo.png",
+                 "araero_ddeoneun_pyo_bottom": "image/sigimsae/araero_ddeoneun_pyo_bottom.png",
+
+                 "gyop_heullim_pyo": "image/sigimsae/gyop_heullim_pyo.png",
+                 "gyop_heullim_pyo_bottom": "image/sigimsae/gyop_heullim_pyo.png",
+
+                 "gyop_mineun_pyo": "image/sigimsae/gyop_mineun_pyo.png",
+                 "gyop_mineun_pyo_bottom": "image/sigimsae/gyop_mineun_pyo.png",
+
+                 "heullim_pyo1": "image/sigimsae/heullim_pyo1.png",
+                 "heullim_pyo1_bottom": "image/sigimsae/heullim_pyo1.png",
+                 "heullim_pyo2": "image/sigimsae/heullim_pyo2.png",
+                 "heullim_pyo2_bottom": "image/sigimsae/heullim_pyo2_bottom.png",
+                 "heullim_pyo3": "image/sigimsae/heullim_pyo3.png",
+                 "heullim_pyo3_bottom": "image/sigimsae/heullim_pyo3_bottom.png",
+
+                 "mineun_pyo1": "image/sigimsae/mineun_pyo1.png",
+                 "mineun_pyo1_bottom": "image/sigimsae/mineun_pyo1.png",
+                 "mineun_pyo2": "image/sigimsae/mineun_pyo2.png",
+                 "mineun_pyo2_bottom": "image/sigimsae/mineun_pyo2_bottom.png",
+                 "mineun_pyo3": "image/sigimsae/mineun_pyo3.png",
+                 "mineun_pyo3_bottom": "image/sigimsae/mineun_pyo3_bottom.png",
+
+                 "nongeum1": "image/sigimsae/nongeum1.png", "nongeum1_bottom": "image/sigimsae/nongeum1_bottom.png",
+                 "nongeum2": "image/sigimsae/nongeum2.png", "nongeum2_bottom": "image/sigimsae/nongeum2_bottom.png",
+                 "nongeum3": "image/sigimsae/nongeum3.png", "nongeum3_bottom": "image/sigimsae/nongeum3_bottom.png",
+                 "nongeum4": "image/sigimsae/nongeum4.png", "nongeum4_bottom": "image/sigimsae/nongeum4_bottom.png",
+                 "nongeum5": "image/sigimsae/nongeum5.png", "nongeum5_bottom": "image/sigimsae/nongeum5_bottom.png",
+                 "nongeum6": "image/sigimsae/nongeum6.png", "nongeum6_bottom": "image/sigimsae/nongeum6_bottom.png",
+                 "nongeum7": "image/sigimsae/nongeum7.png", "nongeum7_bottom": "image/sigimsae/nongeum7_bottom.png",
+                 "nongeum8": "image/sigimsae/nongeum8.png", "nongeum8_bottom": "image/sigimsae/nongeum8_bottom.png",
+
+                 "pureo_naerinuen_pyo": "image/sigimsae/pureo_naerinuen_pyo.png",
+                 "pureo_naerinuen_pyo_bottom": "image/sigimsae/pureo_naerinuen_pyo_bottom.png",
+
+                 "wiro_ddeoneun_pyo": "image/sigimsae/wiro_ddeoneun_pyo.png",
+                 "wiro_ddeoneun_pyo_bottom": "image/sigimsae/wiro_ddeoneun_pyo_bottom.png"}
+
+    ICON_PLACEMENT = [["araero_ddeoneun_pyo", "gyop_heullim_pyo", "gyop_mineun_pyo"],
+
+                      ["heullim_pyo1", "heullim_pyo2", "heullim_pyo3"],
+
+                      ["mineun_pyo1", "mineun_pyo2", "mineun_pyo3"],
+
+                      ["nongeum1", "nongeum2", "nongeum3"],
+                      ["nongeum4", "nongeum5", "nongeum6"],
+                      ["nongeum7", "nongeum8", "wiro_ddeoneun_pyo"],
+
+                      ["pureo_naerinuen_pyo",  "nongeum3", "nongeum3"]]
+
+    current_pos = None
 
     def __init__(self, _id: int, is_bottom_border: bool = False, is_first_row: bool = False,
                  parent: "Gasaran" = None):
@@ -486,13 +536,12 @@ class Sigimsae(QLabel):
 
         self.set_style(self)
 
+        self.dialog = QDialog()
+
         self.setMargin(0)
         self.setContentsMargins(0, 0, 0, 0)
 
-        if self.is_bottom_border:
-            self.set_sigimsae("nongeum_bottom")
-        else:
-            self.set_sigimsae("nongeum")
+        self.set_sigimsae(self)
 
     def set_style(self, obj: QLabel) -> None:
         global css_content
@@ -501,8 +550,6 @@ class Sigimsae(QLabel):
                 css_content = f.read()
 
         obj.setStyleSheet(css_content)
-
-        icon_path = {"up": "image/sumpyo2.png", "down": "image/sumpyo2_down.png"}
 
         if self.is_bottom_border:
             css_style = json_extract(css_content, "Sigimsae", "bottom_border")
@@ -515,11 +562,86 @@ class Sigimsae(QLabel):
     def get_id(self) -> int:
         return self.id
 
-    def set_sigimsae(self, label_type: str) -> None:
-        self.label_type = label_type
+    @staticmethod
+    def set_sigimsae(obj: "Sigimsae") -> None:
+        obj.clear()
+        if obj.label_type is not None:
+            if obj.is_bottom_border:
+                obj.setPixmap(QPixmap(Sigimsae.ICON_PATH[obj.label_type + "_bottom"]))
+            else:
+                obj.setPixmap(QPixmap(Sigimsae.ICON_PATH[obj.label_type]))
 
-        self.clear()
-        self.setPixmap(QPixmap(Sigimsae.ICON_PATH[self.label_type]))
+    def mousePressEvent(self, event) -> None:
+        position = event.pos()
+        print(f"Clicked at position: {position.x()}, {position.y()}")
+        print(f"x: {self.geometry().x()}, y: {self.geometry().y()}, "
+              f"width: {self.geometry().width()}, height: {self.geometry().height()}")
+
+        self.dialog_open()
+
+    def dialog_open(self) -> None:
+        dialog_layout = QVBoxLayout()
+        sigimsae_grid = QGridLayout()
+        sigimsae_grid.setContentsMargins(0, 0, 0, 0)
+        dialog_layout.addLayout(sigimsae_grid)
+
+        sigimsae_buttons: list[QPushButton] = []
+
+        Sigimsae.current_pos = self
+
+        col = 0
+        for col_item in Sigimsae.ICON_PLACEMENT:
+            row = 0
+            for item in col_item:
+                sigimsae_button = QPushButton()
+                sigimsae_button.setIcon(QIcon(Sigimsae.ICON_PATH[item]))
+                sigimsae_button.setToolTip(item)
+                sigimsae_button.setFixedSize(27, 22)
+                sigimsae_button.setContentsMargins(0, 0, 0, 0)
+                sigimsae_buttons.append(sigimsae_button)
+                sigimsae_grid.addWidget(sigimsae_button, row, col)
+
+                row += 1
+
+            col += 1
+
+        for button_item in sigimsae_buttons:
+            tmp_str = button_item.toolTip()
+            button_item.clicked.connect(
+                lambda _, s=tmp_str: self.apply_sigimsae(obj=Sigimsae.current_pos, label_type=s)
+            )
+
+        apply_cancel_layout = QHBoxLayout()
+        apply_cancel_layout.setAlignment(QtCore.Qt.AlignHCenter)
+        dialog_layout.addLayout(apply_cancel_layout)
+
+        apply_button = QPushButton("확인")
+        apply_button.clicked.connect(self.dialog.close)
+        cancel_button = QPushButton("취소")
+        cancel_button.clicked.connect(self.dialog.close)
+
+        apply_cancel_layout.addWidget(apply_button, alignment=QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+        apply_cancel_layout.addWidget(cancel_button, alignment=QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+
+        self.dialog.setLayout(dialog_layout)
+        self.dialog.setWindowTitle("시김새 넣기")
+        self.dialog.setMinimumWidth(300)
+        self.dialog.show()
+
+    @staticmethod
+    def apply_sigimsae(obj: "Sigimsae", label_type: str = None) -> None:
+        if label_type is not None:
+            obj.label_type = label_type
+        obj.set_sigimsae(obj)
+
+        my_pos = obj.parent.get_sigimsae_pos(obj.id)
+
+        if my_pos == obj.parent.get_max_sigimsae() - 1:
+            next_gang = obj.parent.parent.parent.find_next_gang(obj.parent.parent.get_id())
+            next_gasaran = next_gang.get_gasaran()
+            Sigimsae.current_pos = next_gasaran.get_sigimsaes(0)
+        else:
+            Sigimsae.current_pos = obj.parent.get_sigimsaes(my_pos + 1)
 
 
 class Gasaran(QHBoxLayout):
@@ -632,9 +754,6 @@ class Gasaran(QHBoxLayout):
     def get_max_sumpyo(self) -> int:
         return len(self.sumpyos)
 
-    def get_sumpyos_size(self) -> int:
-        return len(self.sumpyos)
-
     def insert_sumpyos_pos(self, pos: int, label_type: str,
                  is_first: bool = False, is_last: bool = False,
                  is_bottom_border: bool = False, is_first_row: bool = False, parent: "Gasaran" = None) -> None:
@@ -650,6 +769,20 @@ class Gasaran(QHBoxLayout):
                                    is_first=is_first, is_last=is_last,
                                    is_bottom_border=is_bottom_border, is_first_row=is_first_row, parent=parent))
         self._id_sumpyo_count += 1
+
+    def get_sigimsae_pos(self, _id: int) -> int:
+        for i in range(len(self.sigimsaes)):
+            if self.sigimsaes[i].get_id() == _id:
+                return i
+        else:
+            raise IndexError(f"{self.get_sigimsae_pos.__name__}: "
+                             f"요청한 id 값이 해당 객체에 존재하지 않습니다({_id}).")
+
+    def get_max_sigimsae(self) -> int:
+        return len(self.sigimsaes)
+
+    def get_sigimsaes(self, pos: int) -> Sigimsae:
+        return self.sigimsaes[pos]
 
 
 class Gak(QGridLayout):  # Gang * n
@@ -1427,7 +1560,6 @@ class Kan(QLabel):
                         else:
                             next_kan = self.parent.find_next_kan(self.id)
 
-                    self.setPixmap(QPixmap("image/sigimsae/gyop_heullim_pyo.png"))
                     next_kan.setText(note)
 
                     if next_kan is None:
