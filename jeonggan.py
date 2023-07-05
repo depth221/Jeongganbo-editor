@@ -4,7 +4,7 @@ import re
 from PyQt5.QtCore import QMargins
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QToolTip, QStatusBar, QMainWindow, \
     QApplication, QGridLayout, QLabel, QAction, qApp, QDesktopWidget, QDialog, QLineEdit, QFormLayout, QHBoxLayout, \
-    QVBoxLayout, QFrame, QSizePolicy, QStackedLayout, QStackedWidget, QStyle, QGraphicsOpacityEffect, QLayout
+    QVBoxLayout, QFrame, QSizePolicy, QStackedLayout, QStackedWidget, QStyle, QGraphicsOpacityEffect, QLayout, QMenu
 from PyQt5.QtGui import QFont, QIcon, QColor, QPalette, QFontMetrics, QPainter, QTextOption, QPixmap
 from PyQt5 import QtCore
 
@@ -523,6 +523,7 @@ class Sigimsae(QLabel):
                       ["pureo_naerinuen_pyo",  "nongeum3", "nongeum3"]]
 
     current_pos = None
+    opened_dialog: list[QDialog] = []
 
     def __init__(self, _id: int, is_bottom_border: bool = False, is_first_row: bool = False,
                  parent: "Gasaran" = None):
@@ -536,7 +537,7 @@ class Sigimsae(QLabel):
 
         self.set_style(self)
 
-        self.dialog = QDialog()
+        self.dialog = None
 
         self.setMargin(0)
         self.setContentsMargins(0, 0, 0, 0)
@@ -570,6 +571,8 @@ class Sigimsae(QLabel):
                 obj.setPixmap(QPixmap(Sigimsae.ICON_PATH[obj.label_type + "_bottom"]))
             else:
                 obj.setPixmap(QPixmap(Sigimsae.ICON_PATH[obj.label_type]))
+        else:
+            obj.clear()
 
     def mousePressEvent(self, event) -> None:
         position = event.pos()
@@ -577,9 +580,17 @@ class Sigimsae(QLabel):
         print(f"x: {self.geometry().x()}, y: {self.geometry().y()}, "
               f"width: {self.geometry().width()}, height: {self.geometry().height()}")
 
+        for dialog in Sigimsae.opened_dialog:
+            dialog.close()
+            dialog.deleteLater()
+        Sigimsae.opened_dialog.clear()
+
         self.dialog_open()
 
     def dialog_open(self) -> None:
+        self.dialog = QDialog()
+        Sigimsae.opened_dialog.append(self.dialog)
+
         dialog_layout = QVBoxLayout()
         sigimsae_grid = QGridLayout()
         sigimsae_grid.setContentsMargins(0, 0, 0, 0)
@@ -617,8 +628,10 @@ class Sigimsae(QLabel):
 
         apply_button = QPushButton("확인")
         apply_button.clicked.connect(self.dialog.close)
-        cancel_button = QPushButton("취소")
-        cancel_button.clicked.connect(self.dialog.close)
+        cancel_button = QPushButton("삭제")
+        cancel_button.clicked.connect(
+            lambda _: self.delete_sigimsae(obj=Sigimsae.current_pos)
+        )
 
         apply_cancel_layout.addWidget(apply_button, alignment=QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
         apply_cancel_layout.addWidget(cancel_button, alignment=QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
@@ -632,6 +645,20 @@ class Sigimsae(QLabel):
     def apply_sigimsae(obj: "Sigimsae", label_type: str = None) -> None:
         if label_type is not None:
             obj.label_type = label_type
+        obj.set_sigimsae(obj)
+
+        my_pos = obj.parent.get_sigimsae_pos(obj.id)
+
+        if my_pos == obj.parent.get_max_sigimsae() - 1:
+            next_gang = obj.parent.parent.parent.find_next_gang(obj.parent.parent.get_id())
+            next_gasaran = next_gang.get_gasaran()
+            Sigimsae.current_pos = next_gasaran.get_sigimsaes(0)
+        else:
+            Sigimsae.current_pos = obj.parent.get_sigimsaes(my_pos + 1)
+
+    @staticmethod
+    def delete_sigimsae(obj: "Sigimsae") -> None:
+        obj.label_type = None
         obj.set_sigimsae(obj)
 
         my_pos = obj.parent.get_sigimsae_pos(obj.id)
@@ -1081,6 +1108,7 @@ class Jeonggan(QGridLayout):
         for i in self.kans_obj[row]:
             self.rows_obj[row].removeWidget(i)
 
+        self.kans_obj[row][col].deleteLater()
         del self.kans_obj[row][col]
         self.kans[row] -= 1
 
@@ -1358,6 +1386,8 @@ class Kan(QLabel):
 
     key_mapping = None
 
+    JANGSIKEUM_PATH = {"nire": "image/jangsikeum/nire.png"}
+
     def __init__(self, rows=0, cols=0, is_first: bool = False, is_last: bool = False,
                  parent: Jeonggan = None):
         super().__init__()
@@ -1366,6 +1396,7 @@ class Kan(QLabel):
         self.is_last = is_last
         self.parent = parent
 
+        self.is_empty = True
         self.id = Kan.count
         Kan.count += 1
         if Kan.clicked_obj is None:
@@ -1383,7 +1414,27 @@ class Kan(QLabel):
 
         self.isClicked = False
 
-    def set_style(self):
+        self.menu = QMenu()
+        self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+
+        for key, value in Kan.JANGSIKEUM_PATH.items():
+            action = QAction(key, self)
+            action.setIcon(QIcon(value))
+            action.triggered.connect(lambda _, l=key: self.set_jangsikeun(label_type=l))
+            self.menu.addAction(action)
+
+        self.customContextMenuRequested.connect(self.show_context_menu)
+
+    def show_context_menu(self, pos) -> None:
+        print(pos)
+        self.menu.exec_(self.mapToGlobal(pos))
+
+    def set_jangsikeun(self, label_type: str) -> None:
+        self.clear()
+        self.setPixmap(QPixmap(Kan.JANGSIKEUM_PATH[label_type]))
+        self.is_empty = False
+
+    def set_style(self) -> None:
         global css_content
         if css_content is None:
             with open("style.css", 'r') as f:
@@ -1502,8 +1553,9 @@ class Kan(QLabel):
                 else:  # 음표가 아님
                     note = pitchname_member.value
 
-                if self.text() in ["O", ""]:  # insert
+                if self.is_empty:  # insert
                     self.setText(note)
+                    self.is_empty = False
                     next_kan = self.parent.find_next_kan(self.id)
                 else:  # insert & append
                     # 1 beat -> 2 beats
@@ -1561,6 +1613,7 @@ class Kan(QLabel):
                             next_kan = self.parent.find_next_kan(self.id)
 
                     next_kan.setText(note)
+                    next_kan.is_empty = False
 
                     if next_kan is None:
                         raise Exception(f"{self.input_by_keyboard.__name__}: 다음 칸 정보가 없습니다.")
@@ -1591,6 +1644,8 @@ class Kan(QLabel):
 
             elif key in Kan.key_mapping["DELETE"]:
                 self.setText("")
+                self.clear()
+                self.is_empty = True
 
             elif key in Kan.key_mapping["ERASE"]:
                 if self.parent.get_max_kan(self.parent.find_kan(self.id)[0])[1] == 0:
@@ -1599,6 +1654,8 @@ class Kan(QLabel):
                         self.parent.erase_row(self.parent.find_kan(self.id)[0])
                     else:  # deletion instead of erasing
                         self.setText("")
+                        self.clear()
+                        self.is_empty = True
                         (self.parent.find_prev_kan(self.id)).click()
                 else:
                     (self.parent.find_prev_kan(self.id)).click()
