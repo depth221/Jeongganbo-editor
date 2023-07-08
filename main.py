@@ -1,10 +1,10 @@
 import sys
 import json
 
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QTimer, QCoreApplication
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QToolTip, QStatusBar, QMainWindow, \
     QApplication, QGridLayout, QLabel, QAction, qApp, QDesktopWidget, QShortcut, QDialog, QStackedWidget, QVBoxLayout, \
-    QFrame, QScrollArea, QFileDialog, QMessageBox
+    QFrame, QScrollArea, QFileDialog, QMessageBox, QHBoxLayout, QLineEdit, QFormLayout
 from PyQt5.QtGui import QFont, QIcon, QColor, QKeySequence, QPalette, QScreen
 from PyQt5 import QtCore
 
@@ -19,6 +19,10 @@ class MyApp(QMainWindow):
         self.statusBar = QStatusBar()
         self.setStatusBar(self.statusBar)
 
+        self.gaks = 6
+        self.gangs = 4
+        self.jeonggans = 3
+
         self.octave = 0
 
         self.curr_page = 1
@@ -29,7 +33,7 @@ class MyApp(QMainWindow):
 
         self.main_widget = QStackedWidget()
         self.pages_obj = list()
-        self.pages_obj.append(Page(gaks=6, title=True, _id=0, parent=self))
+        self.add_new_page(title=True)
 
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
@@ -37,6 +41,9 @@ class MyApp(QMainWindow):
 
         self.potential_error_in_exporting_page: list[str] = []
         self.is_saved = True
+
+        self.toolbar = None
+        self.new_file_dialog = QDialog()
 
         self.init_ui()
 
@@ -58,9 +65,6 @@ class MyApp(QMainWindow):
         p.setColor(QPalette.Background, QColor(239, 239, 239))
         self.main_widget.setPalette(p)
 
-        for page in self.pages_obj:
-            self.main_widget.addWidget(page)
-        # self.setCentralWidget(self.main_widget)
         self.setCentralWidget(self.scroll_area)
 
         screen = QApplication.primaryScreen()
@@ -74,28 +78,35 @@ class MyApp(QMainWindow):
         self.show()
 
     def add_file_items(self):
-
         filemenu = self.menuBar().addMenu('&File')
-
-        saveAction = QAction(QIcon('image/save.svg'), 'Save', self)
-        saveAction.setShortcut('Ctrl+S')
-        saveAction.setStatusTip('Save the file')
-        saveAction.triggered.connect(self.export_wait)
-
-        filemenu.addAction(saveAction)
-
         self.toolbar = self.addToolBar('Tools')
-        self.toolbar.addAction(saveAction)
+
+        # new file
+        new_action = QAction(QIcon('image/new.svg'), 'New File', self)
+        new_action.setShortcut('Ctrl+N')
+        new_action.setStatusTip('Make a the file')
+        new_action.triggered.connect(self.new_file)
+
+        filemenu.addAction(new_action)
+        self.toolbar.addAction(new_action)
+
+        # save
+        save_action = QAction(QIcon('image/save.svg'), 'Save', self)
+        save_action.setShortcut('Ctrl+S')
+        save_action.setStatusTip('Save the file')
+        save_action.triggered.connect(self.export_wait)
+
+        filemenu.addAction(save_action)
+        self.toolbar.addAction(save_action)
 
         # exit
-        exitAction = QAction(QIcon('image/exit.svg'), 'Exit', self)
-        exitAction.setShortcut('Ctrl+Q')
-        exitAction.setStatusTip('Exit application')
-        exitAction.triggered.connect(self.close)
+        exit_action = QAction(QIcon('image/exit.svg'), 'Exit', self)
+        exit_action.setShortcut('Ctrl+Q')
+        exit_action.setStatusTip('Exit application')
+        exit_action.triggered.connect(self.close)
 
-        filemenu.addAction(exitAction)
-
-        self.toolbar.addAction(exitAction)
+        filemenu.addAction(exit_action)
+        self.toolbar.addAction(exit_action)
 
     def add_push_button(self):
         btn = QPushButton('Quit', self)
@@ -132,9 +143,7 @@ class MyApp(QMainWindow):
 
     def call_next_page(self):
         if self.curr_page == len(self.pages_obj):
-            tmp_page = Page(gaks=7, _id=len(self.pages_obj), parent=self)
-            self.pages_obj.append(tmp_page)
-            self.main_widget.addWidget(tmp_page)
+            self.add_new_page(title=False)
 
         self.curr_page += 1
         self.main_widget.setCurrentIndex(self.curr_page - 1)
@@ -319,12 +328,118 @@ class MyApp(QMainWindow):
         if self.is_saved:
             event.accept()
         else:
-            exit_result = QMessageBox.question(None, "아직 저장하지 않음", "변경 내역을 저장하지 않았습니다. 정말 종료하시겠습니까?",
+            exit_result = QMessageBox.question(None, "아직 저장하지 않음",
+                                               "변경 내역을 저장하지 않았습니다. 정말 종료하시겠습니까?",
                                                QMessageBox.Yes | QMessageBox.No)
             if exit_result == QMessageBox.Yes:
                 event.accept()
             else:
                 event.ignore()
+
+    def new_file(self) -> None:
+        if not self.is_saved:
+            new_file_result = QMessageBox.question(None, "아직 저장하지 않음",
+                                                   "변경 내역을 저장하지 않았습니다. 정말 새로운 정간보를 만드시겠습니까?",
+                                                   QMessageBox.Yes | QMessageBox.No)
+            if new_file_result != QMessageBox.Yes:
+                return
+
+        form_layout = QFormLayout()
+        dialog_layout = QVBoxLayout()
+
+        self.new_file_dialog.setLayout(dialog_layout)
+        self.new_file_dialog.setContentsMargins(0, 0, 0, 0)
+        form_layout.setContentsMargins(0, 0, 0, 0)
+
+        gak_widget = QLineEdit()
+        gang_widget = QLineEdit()
+        jeonggan_widget = QLineEdit()
+        gak_widget.setText("6")
+        gang_widget.setText("4")
+        jeonggan_widget.setText("3")
+
+        new_cancel_layout = QHBoxLayout()
+        new_cancel_layout.setAlignment(QtCore.Qt.AlignHCenter)
+
+        new_button = QPushButton("생성")
+        new_button.clicked.connect(
+            lambda: self.add_new_file(gak_widget.text(), gang_widget.text(), jeonggan_widget.text())
+        )
+
+        new_cancel_layout.addWidget(new_button, alignment=QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+
+        form_layout.addRow("한 페이지에 들어갈 각: ", gak_widget)
+        form_layout.addRow("한 각에 들어갈 강: ", gang_widget)
+        form_layout.addRow("한 강에 들어갈 정간: ", jeonggan_widget)
+
+        dialog_layout.addLayout(form_layout)
+        dialog_layout.addLayout(new_cancel_layout)
+
+        self.new_file_dialog.setWindowTitle("새로운 정간보")
+        self.new_file_dialog.setMinimumWidth(200)
+        self.new_file_dialog.show()
+
+    def add_new_page(self, title: bool = False) -> None:
+        tmp_page = Page(gaks=self.gaks + (0 if title is True else 1), gangs=self.gangs, jeonggans=self.jeonggans,
+                        title=title, _id=len(self.pages_obj), parent=self)
+
+        self.pages_obj.append(tmp_page)
+        self.main_widget.addWidget(tmp_page)
+
+    def remove_all_page(self) -> None:
+        for page in self.pages_obj:
+            self.main_widget.removeWidget(page)
+            page.deleteLater()
+
+        self.pages_obj.clear()
+        self.curr_page = 0
+        Kan.clicked_obj = None
+
+    def add_new_file(self, gak: int = 6, gang: int = 4, jeonggan: int = 3):
+        self.new_file_dialog.close()
+
+        try:
+            gak = int(gak)
+            if gak < 1:
+                raise ValueError
+        except ValueError:
+            QMessageBox.critical(None, "새로운 정간보 생성 중 오류 발생", "'한 페이지에 들어갈 각'에 입력된 값이 자연수가 아닙니다." +
+                                 "다시 입력해 주세요.")
+            self.new_file()
+            return
+
+        try:
+            gang = int(gang)
+            if gang < 1:
+                raise ValueError
+        except ValueError:
+            QMessageBox.critical(None, "새로운 정간보 생성 중 오류 발생", "'한 각에 들어갈 강'에 입력된 값이 자연수가 아닙니다." +
+                                 "다시 입력해 주세요.")
+            self.new_file()
+            return
+
+        try:
+            jeonggan = int(jeonggan)
+            if jeonggan < 1:
+                raise ValueError
+        except ValueError:
+            QMessageBox.critical(None, "새로운 정간보 생성 중 오류 발생", "'한 강에 들어갈 정간'에 입력된 값이 자연수가 아닙니다." +
+                                 "다시 입력해 주세요.")
+            self.new_file()
+            return
+
+        self.remove_all_page()
+
+        self.gaks = gak
+        self.gangs = gang
+        self.jeonggans = jeonggan
+
+        self.add_new_page(title=True)
+        self.curr_page = 1
+        self.main_widget.setCurrentIndex(0)
+
+        self.setWindowTitle(f"정간보 편집기 - {len(self.pages_obj)}쪽 중 {self.curr_page}쪽")
+        self.statusBar.showMessage(f"{len(self.pages_obj)}쪽 중 {self.curr_page}쪽")
 
 
 if __name__ == '__main__':

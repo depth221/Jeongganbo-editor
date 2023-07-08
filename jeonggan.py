@@ -15,7 +15,8 @@ css_content = None
 
 
 class Page(QWidget):
-    def __init__(self, gaks: int = 6, title: bool = False, _id: int = None, parent: QMainWindow = None):
+    def __init__(self, gaks: int = 6, gangs: int = 4, jeonggans: int = 3,
+                 title: bool = False, _id: int = None, parent: QMainWindow = None):
         super().__init__()
 
         self.parent = parent
@@ -23,6 +24,9 @@ class Page(QWidget):
 
         self.gaks = gaks
         self.gaks_obj = []  # list(QgridLayout)
+
+        self.gangs = gangs
+        self.jeonggans = jeonggans
 
         self.page_layout = QGridLayout()
         self.setLayout(self.page_layout)
@@ -37,11 +41,11 @@ class Page(QWidget):
         self.jeonggan_grid.setSpacing(0)
         self.jeonggan_grid.setContentsMargins(0, 0, 0, 0)
 
-        self.page_layout.addLayout(LeftPart(), 0, 0)
+        self.page_layout.addLayout(LeftPart(parent=self), 0, 0)
         self.page_layout.addWidget(BottomPart(), 1, 0, 1, 3)
 
         for i in range(gaks - 1, -1, -1):
-            tmp_gak = Gak(num=4, _id=gaks - i - 1, parent=self)
+            tmp_gak = Gak(num=gangs, jeonggans=jeonggans, _id=gaks - i - 1, parent=self)
             self.jeonggan_grid.addLayout(tmp_gak, 0, i)
             self.gaks_obj.append(tmp_gak)
 
@@ -50,7 +54,7 @@ class Page(QWidget):
         if title is True:
             self.page_layout.addLayout(TitlePart(parent=self), 0, 2)
         else:
-            self.page_layout.addWidget(NonTitlePart(), 0, 2)
+            self.page_layout.addWidget(NonTitlePart(parent=self), 0, 2)
 
     def find_next_gak(self, _id: int):
         if _id == self.gaks - 1:
@@ -110,7 +114,7 @@ class LeftPart(QVBoxLayout):
 
         tmp_label_1 = QLabel()
         tmp_label_1.setObjectName("LeftPart1")
-        tmp_label_1.setFixedSize(width, 66 * 12 + 1)
+        tmp_label_1.setFixedSize(width, 66 * self.parent.gangs * self.parent.jeonggans + 1)
         self.addWidget(tmp_label_1)
 
         tmp_label_2 = QLabel()
@@ -210,7 +214,7 @@ class TitlePartFrame(QFrame):
         self.setFrameShape(QFrame.Box)
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
         self.setContentsMargins(1, 1, 1, 1)
-        self.setFixedHeight(70 + 66 * 12 + 8)
+        self.setFixedHeight(70 + 66 * self.parent.gangs * self.parent.jeonggans + 8)
 
     def mousePressEvent(self, event) -> None:
         position = event.pos()
@@ -228,7 +232,7 @@ class TitlePart(QGridLayout):
         self.setContentsMargins(0, 0, 0, 0)
         self.parent = parent
 
-        self.frame = TitlePartFrame(parent=self)
+        self.frame = TitlePartFrame(parent=parent)
         self.addWidget(self.frame)
 
         self.gridlayout = QGridLayout()
@@ -815,7 +819,7 @@ class Gasaran(QHBoxLayout):
 
 
 class Gak(QGridLayout):  # Gang * n
-    def __init__(self, num=3, _id=None, parent: Page = None):
+    def __init__(self, num: int = 4, jeonggans: int = 3, _id=None, parent: Page = None):
         super().__init__()
         self.parent = parent
         self.id = _id
@@ -828,11 +832,11 @@ class Gak(QGridLayout):  # Gang * n
         for i in range(num):
             tmp_label = None
             if i == 0:
-                tmp_label = Gang(num=3, _id=i, is_first=True, is_last=False, parent=self)
+                tmp_label = Gang(num=jeonggans, _id=i, is_first=True, is_last=False, parent=self)
             elif i == num - 1:
-                tmp_label = Gang(num=3, _id=i, is_first=False, is_last=True, parent=self)
+                tmp_label = Gang(num=jeonggans, _id=i, is_first=False, is_last=True, parent=self)
             else:
-                tmp_label = Gang(num=3, _id=i, is_first=False, is_last=False, parent=self)
+                tmp_label = Gang(num=jeonggans, _id=i, is_first=False, is_last=False, parent=self)
             self.gangs_obj.append(tmp_label)
             self.addLayout(tmp_label, i, 0)
 
