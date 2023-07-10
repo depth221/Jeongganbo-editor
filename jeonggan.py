@@ -52,7 +52,8 @@ class Page(QWidget):
         self.page_layout.addLayout(self.jeonggan_grid, 0, 1)
 
         if title is True:
-            self.page_layout.addLayout(TitlePart(parent=self), 0, 2)
+            self.title_part = TitlePart(parent=self)
+            self.page_layout.addLayout(self.title_part, 0, 2)
         else:
             self.page_layout.addWidget(NonTitlePart(parent=self), 0, 2)
 
@@ -207,9 +208,10 @@ class NonTitlePart(QLabel):
 
 
 class TitlePartFrame(QFrame):
-    def __init__(self, parent: Page = None):
+    def __init__(self, layout: "TitlePart", parent: Page = None):
         super().__init__()
         self.parent = parent
+        self.layout = layout
 
         self.setFrameShape(QFrame.Box)
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
@@ -222,7 +224,7 @@ class TitlePartFrame(QFrame):
         print(f"x: {self.geometry().x()}, y: {self.geometry().y()}, "
               f"width: {self.geometry().width()}, height: {self.geometry().height()}")
 
-        self.parent.dialog_open()
+        self.layout.dialog_open()
 
 
 class TitlePart(QGridLayout):
@@ -232,7 +234,7 @@ class TitlePart(QGridLayout):
         self.setContentsMargins(0, 0, 0, 0)
         self.parent = parent
 
-        self.frame = TitlePartFrame(parent=parent)
+        self.frame = TitlePartFrame(layout=self, parent=parent)
         self.addWidget(self.frame)
 
         self.gridlayout = QGridLayout()
@@ -374,6 +376,11 @@ class TitlePart(QGridLayout):
             tmp_label.setText(self.subtitle[i])
             self.subtitle_layout.insertWidget(i + 1, tmp_label, alignment=QtCore.Qt.AlignVCenter | QtCore.Qt.AlignCenter)
 
+    def get_title(self) -> str:
+        return self.title
+
+    def get_subtitle(self) -> str:
+        return self.subtitle
 
 class Sumpyo(QLabel):
     SIZE = {"up": (8, 8), "down": (8, 8)}
@@ -680,12 +687,9 @@ class Sigimsae(QLabel):
 class Gasaran(QHBoxLayout):
     def __init__(self, num: int = 1, parent: "Gang" = None):
         super().__init__()
-        # self.set_style()
 
         self.setSpacing(0)
         self.setContentsMargins(0, 0, 0, 0)
-
-        # self.setText("＜")
 
         self.parent = parent
         self.num = num
@@ -817,6 +821,11 @@ class Gasaran(QHBoxLayout):
     def get_sigimsaes(self, pos: int) -> Sigimsae:
         return self.sigimsaes[pos]
 
+    def get_sumpyo_list(self) -> list[Sumpyo]:
+        return self.sumpyos
+
+    def get_sigimsae_list(self) -> list[Sigimsae]:
+        return self.sigimsaes
 
 class Gak(QGridLayout):  # Gang * n
     def __init__(self, num: int = 4, jeonggans: int = 3, _id=None, parent: Page = None):
@@ -1206,15 +1215,29 @@ class Jeonggan(QGridLayout):
             raise IndexError(f"{self.extend_3_to_4.__name__}: "
                              f"3번째 줄의 칸이 1개가 아닙니다({self.kans[2]}).")
 
-        note_2 = self.kans_obj[1][0].text()
-        note_3 = self.kans_obj[2][0].text()
+        note_2_type = self.kans_obj[1][0].type
+        note_2_value = self.kans_obj[1][0].text()
+        note_2_key = self.kans_obj[1][0].key
+        note_2_octave = self.kans_obj[1][0].octave
+
+        note_3_type = self.kans_obj[2][0].type
+        note_3_value = self.kans_obj[2][0].text()
+        note_3_key = self.kans_obj[2][0].key
+        note_3_octave = self.kans_obj[2][0].octave
 
         self.erase_row(2)
         self.append(0)
         self.append(1)
 
-        self.kans_obj[0][1].setText(note_2)
-        self.kans_obj[1][0].setText(note_3)
+        if note_2_type == "note":
+            self.kans_obj[0][1].set_note(note_2_key, note_2_value, note_2_octave)
+        elif note_2_type == "jangsikeum":
+            self.kans_obj[0][1].set_jangsikeun(note_2_key)
+
+        if note_3_type == "note":
+            self.kans_obj[1][0].set_note(note_3_key, note_3_value, note_3_octave)
+        elif note_3_type == "jangsikeum":
+            self.kans_obj[1][0].set_jangsikeun(note_3_key)
 
         return self.kans_obj[1][1]
 
@@ -1417,7 +1440,10 @@ class Kan(QLabel):
         self.setMargin(0)
         self.setContentsMargins(0, 0, 0, 0)
 
+        self.type = None
+        self.key = None
         self.setText("")
+        self.octave = 0
 
         self.isClicked = False
 
@@ -1435,11 +1461,6 @@ class Kan(QLabel):
     def show_context_menu(self, pos) -> None:
         print(pos)
         self.menu.exec_(self.mapToGlobal(pos))
-
-    def set_jangsikeun(self, label_type: str) -> None:
-        self.clear()
-        self.setPixmap(QPixmap(f"image/jangsikeum/{label_type}.png"))
-        self.is_empty = False
 
     def set_style(self) -> None:
         global css_content
@@ -1534,6 +1555,7 @@ class Kan(QLabel):
                 next_kan = None
 
                 note = None
+                self.octave = octave
                 if octave == 0:
                     note = pitchname_member.value
                 elif octave == 1:
@@ -1563,8 +1585,7 @@ class Kan(QLabel):
                     note = pitchname_member.value
 
                 if self.is_empty:  # insert
-                    self.setText(note)
-                    self.is_empty = False
+                    self.set_note(pitchname_key, note, octave)
                     next_kan = self.parent.find_next_kan(self.id)
                 else:  # insert & append
                     # 1 beat -> 2 beats
@@ -1621,8 +1642,7 @@ class Kan(QLabel):
                         else:
                             next_kan = self.parent.find_next_kan(self.id)
 
-                    next_kan.setText(note)
-                    next_kan.is_empty = False
+                    next_kan.set_note(pitchname_key, note, octave)
 
                     if next_kan is None:
                         raise Exception(f"{self.input_by_keyboard.__name__}: 다음 칸 정보가 없습니다.")
@@ -1652,9 +1672,7 @@ class Kan(QLabel):
                 tmp_next_jeonggan.find_kan_by_pos(0, 0).click()
 
             elif key in Kan.key_mapping["DELETE"]:
-                self.setText("")
-                self.clear()
-                self.is_empty = True
+                self.clear_all()
 
             elif key in Kan.key_mapping["ERASE"]:
                 if self.parent.get_max_kan(self.parent.find_kan(self.id)[0])[1] == 0:
@@ -1662,9 +1680,7 @@ class Kan(QLabel):
                         (self.parent.find_prev_kan(self.id)).click()
                         self.parent.erase_row(self.parent.find_kan(self.id)[0])
                     else:  # deletion instead of erasing
-                        self.setText("")
-                        self.clear()
-                        self.is_empty = True
+                        self.clear_all()
                         (self.parent.find_prev_kan(self.id)).click()
                 else:
                     (self.parent.find_prev_kan(self.id)).click()
@@ -1706,6 +1722,35 @@ class Kan(QLabel):
 
             else:
                 print("Unknown Command: ", key)
+
+    def set_note(self, key: str, value: str, octave: int) -> None:
+        self.clear()
+        self.setText(value)
+        self.key = key
+        self.type = "note"
+        self.octave = octave
+
+        if key is None:
+            self.is_empty = True
+        else:
+            self.is_empty = False
+
+    def set_jangsikeun(self, label_type: str) -> None:
+        self.clear()
+        self.setText("")
+        self.setPixmap(QPixmap(f"image/jangsikeum/{label_type}.png"))
+        self.key = label_type
+        self.type = "jangsikeum"
+        self.octave = 0
+
+        self.is_empty = False
+
+    def clear_all(self):
+        self.clear()
+        self.setText("")
+        self.type = None
+        self.is_empty = True
+        self.octave = 0
 
 
 def json_extract(text: str, object_name: str, suffix: str) -> str:

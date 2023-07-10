@@ -10,6 +10,7 @@ from PyQt5 import QtCore
 
 from jeonggan import Page, TopPart, TitlePart, Gasaran, Gak, Gang, Jeonggan, Kan
 from pitch_name import PitchName
+from save_xml import SaveJGBX
 
 
 class MyApp(QMainWindow):
@@ -94,10 +95,19 @@ class MyApp(QMainWindow):
         save_action = QAction(QIcon('image/save.svg'), 'Save', self)
         save_action.setShortcut('Ctrl+S')
         save_action.setStatusTip('Save the file')
-        save_action.triggered.connect(self.export_wait)
+        save_action.triggered.connect(self.save_as)
 
         filemenu.addAction(save_action)
         self.toolbar.addAction(save_action)
+
+        # export
+        export_action = QAction(QIcon('image/export.svg'), 'Export', self)
+        export_action.setShortcut('Ctrl+E')
+        export_action.setStatusTip('Export the file')
+        export_action.triggered.connect(self.export_wait)
+
+        filemenu.addAction(export_action)
+        self.toolbar.addAction(export_action)
 
         # exit
         exit_action = QAction(QIcon('image/exit.svg'), 'Exit', self)
@@ -440,6 +450,22 @@ class MyApp(QMainWindow):
 
         self.setWindowTitle(f"정간보 편집기 - {len(self.pages_obj)}쪽 중 {self.curr_page}쪽")
         self.statusBar.showMessage(f"{len(self.pages_obj)}쪽 중 {self.curr_page}쪽")
+
+    def save_as(self):
+        options = QFileDialog.Options()
+        file_name, _ = QFileDialog.getSaveFileName(self, "Save as...", "", "Jeongganbo XML File(*.jgbx);;All Files(*)",
+                                                   options=options)
+
+        if file_name:
+            if file_name[-5:] != ".jgbx":
+                file_name += ".jgbx"
+
+            self.statusBar.showMessage("정간보를 저장하는 중입니다...")
+
+            save_xml = SaveJGBX(pages=self.pages_obj)
+            save_xml.save_xml(file_name=file_name)
+
+            self.statusBar.showMessage("저장 완료!")
 
 
 if __name__ == '__main__':
