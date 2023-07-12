@@ -11,6 +11,7 @@ from PyQt5 import QtCore
 from jeonggan import Page, TopPart, TitlePart, Gasaran, Gak, Gang, Jeonggan, Kan
 from pitch_name import PitchName
 from save_xml import SaveJGBX
+from load_xml import LoadJGBX
 
 
 class MyApp(QMainWindow):
@@ -42,6 +43,7 @@ class MyApp(QMainWindow):
 
         self.potential_error_in_exporting_page: list[str] = []
         self.is_saved = True
+        self.saved_path: str = ""
 
         self.toolbar = None
         self.new_file_dialog = QDialog()
@@ -91,14 +93,31 @@ class MyApp(QMainWindow):
         filemenu.addAction(new_action)
         self.toolbar.addAction(new_action)
 
+        # open
+        open_action = QAction(QIcon('image/open.svg'), 'Open', self)
+        open_action.setShortcut('Ctrl+O')
+        open_action.setStatusTip('Open the file')
+        open_action.triggered.connect(self.load)
+
+        filemenu.addAction(open_action)
+        self.toolbar.addAction(open_action)
+
         # save
         save_action = QAction(QIcon('image/save.svg'), 'Save', self)
         save_action.setShortcut('Ctrl+S')
         save_action.setStatusTip('Save the file')
-        save_action.triggered.connect(self.save_as)
+        save_action.triggered.connect(self.save)
 
         filemenu.addAction(save_action)
         self.toolbar.addAction(save_action)
+
+        # save as
+        save_as_action = QAction(QIcon('image/save_as.svg'), 'Save as ...', self)
+        save_as_action.setShortcut('Ctrl+Shift+S')
+        save_as_action.setStatusTip('Save the file')
+        save_as_action.triggered.connect(self.save_as)
+
+        filemenu.addAction(save_as_action)
 
         # export
         export_action = QAction(QIcon('image/export.svg'), 'Export', self)
@@ -447,9 +466,23 @@ class MyApp(QMainWindow):
         self.add_new_page(title=True)
         self.curr_page = 1
         self.main_widget.setCurrentIndex(0)
+        self.is_saved = True
+        self.saved_path = ""
 
         self.setWindowTitle(f"정간보 편집기 - {len(self.pages_obj)}쪽 중 {self.curr_page}쪽")
         self.statusBar.showMessage(f"{len(self.pages_obj)}쪽 중 {self.curr_page}쪽")
+
+    def save(self):
+        if self.saved_path == "":
+            self.save_as()
+        else:
+            self.statusBar.showMessage("정간보를 저장하는 중입니다...")
+
+            save_xml = SaveJGBX(pages=self.pages_obj)
+            save_xml.save_xml(file_name=self.saved_path)
+
+            self.statusBar.showMessage("저장 완료!")
+            self.is_saved = True
 
     def save_as(self):
         options = QFileDialog.Options()
@@ -460,12 +493,34 @@ class MyApp(QMainWindow):
             if file_name[-5:] != ".jgbx":
                 file_name += ".jgbx"
 
-            self.statusBar.showMessage("정간보를 저장하는 중입니다...")
+            self.saved_path = file_name
+            self.save()
 
-            save_xml = SaveJGBX(pages=self.pages_obj)
-            save_xml.save_xml(file_name=file_name)
+    def load(self) -> None:
+        options = QFileDialog.Options()
+        file_name, _ = QFileDialog.getOpenFileName(self, "Open", "", "Jeongganbo XML File(*.jgbx);;All Files(*)",
+                                                   options=options)
 
-            self.statusBar.showMessage("저장 완료!")
+        if file_name:
+            self.statusBar.showMessage("정간보를 여는 중입니다...")
+
+            for page in self.pages_obj:
+                self.main_widget.removeWidget(page)
+                page.deleteLater()
+            self.pages_obj.clear()
+            Kan.clicked_obj = None
+
+            load_obj = LoadJGBX(file_name, self, self.pages_obj)
+            self.gaks, self.gangs, self.jeonggans = load_obj.load_xml()
+
+            for page in self.pages_obj:
+                self.main_widget.addWidget(page)
+
+            self.main_widget.setCurrentIndex(0)
+            self.curr_page = 1
+
+            self.setWindowTitle(f"정간보 편집기 - {len(self.pages_obj)}쪽 중 {self.curr_page}쪽")
+            self.statusBar.showMessage("완료!")
 
 
 if __name__ == '__main__':

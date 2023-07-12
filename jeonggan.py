@@ -382,6 +382,7 @@ class TitlePart(QGridLayout):
     def get_subtitle(self) -> str:
         return self.subtitle
 
+
 class Sumpyo(QLabel):
     SIZE = {"up": (8, 8), "down": (8, 8)}
     ICON_PATH = {"up": "image/sumpyo2.png", "down": "image/sumpyo2_down.png"}
@@ -827,6 +828,7 @@ class Gasaran(QHBoxLayout):
     def get_sigimsae_list(self) -> list[Sigimsae]:
         return self.sigimsaes
 
+
 class Gak(QGridLayout):  # Gang * n
     def __init__(self, num: int = 4, jeonggans: int = 3, _id=None, parent: Page = None):
         super().__init__()
@@ -887,12 +889,12 @@ class Gang(QGridLayout):  # Gasaran + Jeonggan * n
 
         self.gasaran = Gasaran(num=num, parent=self)
 
-        jeonggan_start_point = 0
-
         self.is_first = is_first
         self.is_last = is_last
 
-        if is_first:
+        jeonggan_start_point = 0
+
+        if self.is_first:
             self.addWidget(TopPart(), 0, 0, 1, 2)
 
             self.addWidget(self.setting_form("first_top_left"), 1, 0)
@@ -911,17 +913,15 @@ class Gang(QGridLayout):  # Gasaran + Jeonggan * n
 
             jeonggan_start_point = 2
 
-        for i in range(num):
+        for i in range(self.jeonggans):
             tmp_label = Jeonggan(row=1, _id=i, parent=self)
-
             self.jeonggans_obj.append(tmp_label)
-            self.addLayout(tmp_label, i + jeonggan_start_point, 0)
+            self.addLayout(self.jeonggans_obj[i], i + jeonggan_start_point, 0)
 
-        # self.addWidget(Gasaran(), 0, 1, num, 1)
-        self.addLayout(self.gasaran, jeonggan_start_point, 1, num, 1)
+        self.addLayout(self.gasaran, jeonggan_start_point, 1, self.jeonggans, 1)
 
-        if is_last:
-            self.addWidget(self.setting_form("last_bottom_left"), num + jeonggan_start_point, 0)
+        if self.is_last:
+            self.addWidget(self.setting_form("last_bottom_left"), self.jeonggans + jeonggan_start_point, 0)
 
             sumpyo_and_right_down_last = QHBoxLayout()
             sumpyo_and_right_down_last.setContentsMargins(0, 0, 0, 0)
@@ -930,11 +930,11 @@ class Gang(QGridLayout):  # Gasaran + Jeonggan * n
             self.gasaran.append_sumpyos(label_type="down", is_last=True, parent=self.gasaran)
             sumpyo_and_right_down_last.addWidget(self.gasaran.get_sumpyos(-1))
 
-            if _id == 0:  # the first row
+            if self.id == 0:  # the first row
                 sumpyo_and_right_down_last.addWidget(self.setting_form("last_bottom_right_id0"))
             else:
                 sumpyo_and_right_down_last.addWidget(self.setting_form("last_bottom_right"))
-            self.addLayout(sumpyo_and_right_down_last, num + jeonggan_start_point, 1)
+            self.addLayout(sumpyo_and_right_down_last, self.jeonggans + jeonggan_start_point, 1)
 
     def setting_form(self, label_type: str) -> QLabel:
         size = {"sumpyo_up": (8, 8), "sumpyo_down": (8, 8),
@@ -1230,12 +1230,12 @@ class Jeonggan(QGridLayout):
         self.append(1)
 
         if note_2_type == "note":
-            self.kans_obj[0][1].set_note(note_2_key, note_2_value, note_2_octave)
+            self.kans_obj[0][1].set_note(note_2_key, note_2_octave)
         elif note_2_type == "jangsikeum":
             self.kans_obj[0][1].set_jangsikeun(note_2_key)
 
         if note_3_type == "note":
-            self.kans_obj[1][0].set_note(note_3_key, note_3_value, note_3_octave)
+            self.kans_obj[1][0].set_note(note_3_key, note_3_octave)
         elif note_3_type == "jangsikeum":
             self.kans_obj[1][0].set_jangsikeun(note_3_key)
 
@@ -1536,7 +1536,7 @@ class Kan(QLabel):
 
         self.click()
 
-    def input_by_keyboard(self, key: str, octave: int = None):
+    def input_by_keyboard(self, key: str, octave: int = 0):
         if Kan.key_mapping is None:
             with open('key_mapping.json', 'r') as f:
                 Kan.key_mapping = json.load(f)
@@ -1585,7 +1585,7 @@ class Kan(QLabel):
                     note = pitchname_member.value
 
                 if self.is_empty:  # insert
-                    self.set_note(pitchname_key, note, octave)
+                    self.set_note(pitchname_key, octave)
                     next_kan = self.parent.find_next_kan(self.id)
                 else:  # insert & append
                     # 1 beat -> 2 beats
@@ -1642,7 +1642,7 @@ class Kan(QLabel):
                         else:
                             next_kan = self.parent.find_next_kan(self.id)
 
-                    next_kan.set_note(pitchname_key, note, octave)
+                    next_kan.set_note(pitchname_key, octave)
 
                     if next_kan is None:
                         raise Exception(f"{self.input_by_keyboard.__name__}: 다음 칸 정보가 없습니다.")
@@ -1723,7 +1723,51 @@ class Kan(QLabel):
             else:
                 print("Unknown Command: ", key)
 
-    def set_note(self, key: str, value: str, octave: int) -> None:
+    @staticmethod
+    def find_value_by_key(key: str, octave: int = 0) -> str:
+        dict_pitchname = PitchName.__members__.items()
+        dict_etc_note = PitchEtcName.__members__.items()
+        list_all_note = list(dict_pitchname) + list(dict_etc_note)
+
+        note = None
+
+        for pitchname_key, pitchname_member in list_all_note:
+            if key == pitchname_key:
+                if octave == 0:
+                    note = pitchname_member.value
+                elif octave == 1:
+                    for pitchname_key_1, pitchname_member_1 in PitchNamePlus1.__members__.items():
+                        if pitchname_key == pitchname_key_1:
+                            note = pitchname_member_1.value
+                            break
+                elif octave == 2:
+                    for pitchname_key_1, pitchname_member_1 in PitchNamePlus2.__members__.items():
+                        if pitchname_key == pitchname_key_1:
+                            note = pitchname_member_1.value
+                            break
+                elif octave == -1:
+                    for pitchname_key_1, pitchname_member_1 in PitchNameMinus1.__members__.items():
+                        if pitchname_key == pitchname_key_1:
+                            note = pitchname_member_1.value
+                            break
+                elif octave == -2:
+                    for pitchname_key_1, pitchname_member_1 in PitchNameMinus2.__members__.items():
+                        if pitchname_key == pitchname_key_1:
+                            note = pitchname_member_1.value
+                            break
+                elif isinstance(pitchname_member, PitchName):  # 음표이지만 옥타브 인자가 없음
+                    raise Exception(f"{Kan.find_value_by_key.__name__}: "
+                                    f"옥타브 값이 -2~2의 정수가 아닙니다({octave}).")
+                else:  # 음표가 아님
+                    note = pitchname_member.value
+
+                break
+
+        return note
+
+    def set_note(self, key: str, octave: int = 0) -> None:
+        value = Kan.find_value_by_key(key, octave)
+
         self.clear()
         self.setText(value)
         self.key = key
