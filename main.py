@@ -1,17 +1,17 @@
-import sys
 import json
+import sys
 
-from PyQt5.QtCore import QTimer, QCoreApplication
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QToolTip, QStatusBar, QMainWindow, \
-    QApplication, QGridLayout, QLabel, QAction, qApp, QDesktopWidget, QShortcut, QDialog, QStackedWidget, QVBoxLayout, \
-    QFrame, QScrollArea, QFileDialog, QMessageBox, QHBoxLayout, QLineEdit, QFormLayout
-from PyQt5.QtGui import QFont, QIcon, QColor, QKeySequence, QPalette, QScreen
 from PyQt5 import QtCore
+from PyQt5.QtCore import QTimer, QCoreApplication, QTranslator
+from PyQt5.QtGui import QIcon, QColor, QKeySequence, QPalette, QPixmap
+from PyQt5.QtWidgets import QPushButton, QStatusBar, QMainWindow, \
+    QApplication, QAction, QDesktopWidget, QShortcut, QDialog, QStackedWidget, QVBoxLayout, \
+    QScrollArea, QFileDialog, QMessageBox, QHBoxLayout, QLineEdit, QFormLayout, QGridLayout, QLabel
 
-from jeonggan import Page, TopPart, TitlePart, Gasaran, Gak, Gang, Jeonggan, Kan
+from jeonggan import Page, Kan
+from load_xml import LoadJGBX
 from pitch_name import PitchName
 from save_xml import SaveJGBX
-from load_xml import LoadJGBX
 
 
 class MyApp(QMainWindow):
@@ -47,6 +47,7 @@ class MyApp(QMainWindow):
 
         self.toolbar = None
         self.new_file_dialog = QDialog()
+        self.about_dialog = QDialog()
 
         self.init_ui()
 
@@ -55,10 +56,6 @@ class MyApp(QMainWindow):
             self.setStyleSheet(f.read())
 
     def init_ui(self):
-        self.statusBar.showMessage('Ready')
-
-        # self.add_push_button()
-
         self.menuBar().setNativeMenuBar(False)
 
         self.add_file_items()
@@ -74,14 +71,17 @@ class MyApp(QMainWindow):
         screen_width, screen_height = screen.geometry().width(), screen.geometry().height()
         width, height = 800, 950
 
-        self.setWindowTitle(f"정간보 편집기 - {len(self.pages_obj)}쪽 중 {self.curr_page}쪽")
-        self.statusBar.showMessage(f"{len(self.pages_obj)}쪽 중 {self.curr_page}쪽")
+        self.setWindowTitle(self.tr("정간보 편집기 - {0}쪽 중 {1}쪽")
+                            .format(str(len(self.pages_obj)), str(self.curr_page)))
+        self.statusBar.showMessage(self.tr("정간보 편집기 - {0}쪽 중 {1}쪽")
+                                   .format(str(len(self.pages_obj)), str(self.curr_page)))
         self.setGeometry((screen_width - width) // 2, (screen_height - height) // 2, width, height)
         self.center()
         self.show()
 
     def add_file_items(self):
         filemenu = self.menuBar().addMenu('&File')
+        aboutmenu = self.menuBar().addMenu('&About')
         self.toolbar = self.addToolBar('Tools')
 
         # new file
@@ -136,6 +136,12 @@ class MyApp(QMainWindow):
 
         filemenu.addAction(exit_action)
         self.toolbar.addAction(exit_action)
+
+        # about menu
+        about_menu_action = QAction(QIcon('image/new.svg'), 'About', self)
+        about_menu_action.triggered.connect(self.view_about)
+
+        aboutmenu.addAction(about_menu_action)
 
     def add_push_button(self):
         btn = QPushButton('Quit', self)
@@ -522,8 +528,34 @@ class MyApp(QMainWindow):
             self.setWindowTitle(f"정간보 편집기 - {len(self.pages_obj)}쪽 중 {self.curr_page}쪽")
             self.statusBar.showMessage("완료!")
 
+    def view_about(self):
+        dialog_layout = QGridLayout()
+        self.about_dialog.setLayout(dialog_layout)
+
+        logo_label = QLabel()
+        logo_label.setPixmap(QPixmap("image/logo.png").scaled(50, 50))
+        dialog_layout.addWidget(logo_label, 0, 0)
+
+        title_label = QLabel()
+        title_label.setStyleSheet("font-size: 24pt;")
+        title_label.setText("정간보 편집기")
+        dialog_layout.addWidget(title_label, 0, 1)
+
+        version_label = QLabel()
+        version_label.setText("v1.0, 2023-07-14")
+        dialog_layout.addWidget(version_label, 1, 1)
+
+        author_label = QLabel()
+        author_label.setText("황동하(Hwang Dongha) depth221@gmail.com")
+        dialog_layout.addWidget(author_label, 2, 1)
+
+        self.about_dialog.show()
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    i18n = QTranslator()
+    i18n.load("i18n/ko.qm")
+    app.installTranslator(i18n)
     ex = MyApp()
     sys.exit(app.exec_())
