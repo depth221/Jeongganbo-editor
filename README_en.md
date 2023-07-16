@@ -21,7 +21,7 @@ There are many shortcomings compared to existing Jeongganbo composing programs, 
 
 ## How to use
 ### Create a new Jeongganbo page
-![Create a new Jeongganbo page](image/README/new_page.png)
+![Create a new Jeongganbo page](image/README/new_page.png)    
 You can press `Ctrl+N` to create a new sheet, where you can set the 'gak to be on one page', 'gang to be on one gak', and 'jeonggan to be on one gang', but you can't change these settings after creating the sheet.
 
 ### Enter notes and rests
