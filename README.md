@@ -83,6 +83,7 @@
 * PyQt5
 * BeautifulSoap
 * pyinstaller(실행 파일로 만들 시에만)
+
 ### 윈도우
 ※ pip을 먼저 설치해야 합니다!
 ```powershell

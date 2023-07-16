@@ -78,7 +78,20 @@ Save a Jeongganbo project file (.jgbx) with `Ctrl+S` (not an image file!). You c
 You can export sheets as an image (.png) file with `Ctrl+E`. Each page will be saved as one image file.
 
 ## installing oneself
+### Dependencies
+* Python 3.10
+* PyQt5
+* BeautifulSoap
+* pyinstaller (Only when creating an executable)
+
 ### Windows
+※ You must install pip first!
+```powershell
+pip install -r requirement.txt
+.\make_exe.cmd
+```
+
+The executable file is located in the `dist\jeongganbo_editor` folder.
 
 ### Mac
 ※ You must install homebrew first!
@@ -88,11 +101,21 @@ pip install -r requirement.txt
 ./make_exe.sh
 ```
 
+Run
+```bash
+./dist/jeongganbo_editor/jeongganbo_editor
+```
+
 ### Linux
 ```bash
 sudo apt install pip
 pip install -r requirement.txt
 ./make_exe.sh
+```
+
+Run
+```bash
+./dist/jeongganbo_editor/jeongganbo_editor
 ```
 
 ## To Be Implemented
