@@ -1,5 +1,10 @@
 # 정간보 편집기
 <img src="image/README/app.png" alt="실행 이미지" width="500">
+ 
+ ## 다운로드
+[https://github.com/depth221/Jeongganbo-editor/releases/](https://github.com/depth221/Jeongganbo-editor/releases/)
+
+※ 윈도우 및 리눅스만 실행 파일을 제공하며, macOS는 직접 소스 코드를 다운로드한 후 실행 파일을 생성해야 합니다.
 
 ## 소개
 지금까지 출시된 정간보 편집기는 2007년에 모젼스랩, 전남대, 단국대에서 공동으로 출시한 [**정간보 매니아**](https://blog.naver.com/jgb_mania/40041295964)와 한 개인 개발자가 2011년 경에 제작한 **정간보 프로젝트**가 있습니다.
@@ -71,6 +76,25 @@
 
 ### 내보내기
 `Ctrl+E`로 정간보를 이미지(.png) 파일로 내보낼 수 있습니다. 각 페이지마다 한 장의 이미지 파일로 저장됩니다.
+
+## 직접 설치
+### 윈도우
+
+### 맥
+※ homebrew를 먼저 설치해야 합니다!
+```bash
+sudo easy_install pip
+pip install -r requirement.txt
+./make_exe.sh
+```
+
+### 리눅스
+※ `pip --version`을 쳤을 때 Python 버전이 3 이상이어야 합니다.
+```bash
+sudo apt install pip
+pip install -r requirement.txt
+./make_exe.sh
+```
 
 ## 구현 예정
 [ ] 테마(글꼴, 배경색 등) 변경 기능 추가   
