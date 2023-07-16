@@ -20,6 +20,10 @@ In this situation, I created a simple **Jeongganbo editor** that is faster than 
 There are many shortcomings compared to existing Jeongganbo composing programs, but if you can tell us about any inconveniences or improvements, I'll do my best to reflect them.
 
 ## How to use
+### Create a new Jeongganbo page
+![Create a new Jeongganbo page](image/README/new_page.png)
+You can press `Ctrl+N` to create a new sheet, where you can set the 'gak to be on one page', 'gang to be on one gak', and 'jeonggan to be on one gang', but you can't change these settings after creating the sheet.
+
 ### Enter notes and rests
 ![Korean traditional music pitch](image/README/notes.png)    
 Each note is assigned to keys 1-5, and pressing a number key with the Ctrl key enters one higher note, and pressing it with the Alt key enters one lower note. 
