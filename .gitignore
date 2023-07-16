@@ -1,0 +1,5 @@
+dist/
+build/
+*.7z
+*.zip
+*.tar.gz
