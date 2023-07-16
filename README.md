@@ -4,7 +4,7 @@
  ## 다운로드
 [https://github.com/depth221/Jeongganbo-editor/releases/](https://github.com/depth221/Jeongganbo-editor/releases/)
 
-※ 윈도우 및 리눅스만 실행 파일을 제공하며, macOS는 직접 소스 코드를 다운로드한 후 실행 파일을 생성해야 합니다.
+※ macOS에서 사용하시려면 **Linux 실행 파일**을 다운로드하세요.
 
 ## 소개
 지금까지 출시된 정간보 편집기는 2007년에 모젼스랩, 전남대, 단국대에서 공동으로 출시한 [**정간보 매니아**](https://blog.naver.com/jgb_mania/40041295964)와 한 개인 개발자가 2011년 경에 제작한 **정간보 프로젝트**가 있습니다.
@@ -97,6 +97,7 @@ pip install -r requirement.txt
 ```
 
 ## 구현 예정
+[ ] 번역 개선    
 [ ] 테마(글꼴, 배경색 등) 변경 기능 추가   
 [ ] 정간보 매니아 파일(.jgb) 부분 지원(공개 포맷이 아니라 완전 지원은 어렵습니다)    
 [ ] 미디(MIDI) 재생 기능 추가    
