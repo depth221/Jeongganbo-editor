@@ -78,7 +78,20 @@
 `Ctrl+E`로 정간보를 이미지(.png) 파일로 내보낼 수 있습니다. 각 페이지마다 한 장의 이미지 파일로 저장됩니다.
 
 ## 직접 설치
+### 의존성
+* Python 3.10
+* PyQt5
+* BeautifulSoap
+* pyinstaller(실행 파일로 만들 시에만)
 ### 윈도우
+※ pip을 먼저 설치해야 합니다!
+```powershell
+pip install -r requirement.txt
+.\make_exe.cmd
+```
+
+실행 파일은 `dist\jeongganbo_editor` 폴더에 있습니다.
+
 
 ### 맥
 ※ homebrew를 먼저 설치해야 합니다!
@@ -88,12 +101,21 @@ pip install -r requirement.txt
 ./make_exe.sh
 ```
 
+실행
+```bash
+./dist/jeongganbo_editor/jeongganbo_editor
+```
+
 ### 리눅스
-※ `pip --version`을 쳤을 때 Python 버전이 3 이상이어야 합니다.
 ```bash
 sudo apt install pip
 pip install -r requirement.txt
 ./make_exe.sh
+```
+
+실행
+```bash
+./dist/jeongganbo_editor/jeongganbo_editor
 ```
 
 ## 구현 예정
