@@ -1,5 +1,6 @@
 import json
 import re
+import os
 
 from PyQt5.QtCore import QMargins
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QToolTip, QStatusBar, QMainWindow, \
@@ -12,6 +13,11 @@ from pitch_name import PitchName, PitchNamePlus1, PitchNamePlus2, PitchNameMinus
 from pitch_etc_name import PitchEtcName
 
 css_content = None
+
+base_dir = os.path.dirname(os.path.abspath(__file__))
+CSS_FILE_PATH = os.path.join(base_dir, 'style.css')
+KEY_MAPPING_PATH = os.path.join(base_dir, 'key_mapping.json')
+IMAGE_PATH = os.path.join(base_dir, 'image/')
 
 
 class Page(QWidget):
@@ -91,7 +97,7 @@ class TopPart(QLabel):
     def set_style(self) -> None:
         global css_content
         if css_content is None:
-            with open("style.css", 'r') as f:
+            with open(CSS_FILE_PATH, 'r') as f:
                 css_content = f.read()
 
         self.setStyleSheet(css_content)
@@ -126,7 +132,7 @@ class LeftPart(QVBoxLayout):
     def set_style(self) -> None:
         global css_content
         if css_content is None:
-            with open("style.css", 'r') as f:
+            with open(CSS_FILE_PATH, 'r') as f:
                 css_content = f.read()
 
         self.setStyleSheet(css_content)
@@ -147,7 +153,7 @@ class BottomPart(QLabel):
     def set_style(self) -> None:
         global css_content
         if css_content is None:
-            with open("style.css", 'r') as f:
+            with open(CSS_FILE_PATH, 'r') as f:
                 css_content = f.read()
 
         self.setStyleSheet(css_content)
@@ -201,7 +207,7 @@ class NonTitlePart(QLabel):
     def set_style(self) -> None:
         global css_content
         if css_content is None:
-            with open("style.css", 'r') as f:
+            with open(CSS_FILE_PATH, 'r') as f:
                 css_content = f.read()
 
         self.setStyleSheet(css_content)
@@ -276,7 +282,7 @@ class TitlePart(QGridLayout):
     def set_style(self, obj: QLabel, attr: str = None) -> None:
         global css_content
         if css_content is None:
-            with open("style.css", 'r') as f:
+            with open(CSS_FILE_PATH, 'r') as f:
                 css_content = f.read()
 
         if attr is None:
@@ -385,7 +391,7 @@ class TitlePart(QGridLayout):
 
 class Sumpyo(QLabel):
     SIZE = {"up": (8, 8), "down": (8, 8)}
-    ICON_PATH = {"up": "image/sumpyo2.png", "down": "image/sumpyo2_down.png"}
+    ICON_PATH = {"up": IMAGE_PATH + "/sumpyo2.png", "down": IMAGE_PATH + "/sumpyo2_down.png"}
 
     def __init__(self, _id: int, label_type: str,
                  is_first: bool = False, is_last: bool = False,
@@ -411,7 +417,7 @@ class Sumpyo(QLabel):
     def set_style(self) -> None:
         global css_content
         if css_content is None:
-            with open("style.css", 'r') as f:
+            with open(CSS_FILE_PATH, 'r') as f:
                 css_content = f.read()
 
         if self.label_type is None:
@@ -484,43 +490,43 @@ class Sumpyo(QLabel):
 
 
 class Sigimsae(QLabel):
-    ICON_PATH = {"araero_ddeoneun_pyo": "image/sigimsae/araero_ddeoneun_pyo.png",
-                 "araero_ddeoneun_pyo_bottom": "image/sigimsae/araero_ddeoneun_pyo_bottom.png",
+    ICON_PATH = {"araero_ddeoneun_pyo": IMAGE_PATH + "/sigimsae/araero_ddeoneun_pyo.png",
+                 "araero_ddeoneun_pyo_bottom": IMAGE_PATH + "/sigimsae/araero_ddeoneun_pyo_bottom.png",
 
-                 "gyop_heullim_pyo": "image/sigimsae/gyop_heullim_pyo.png",
-                 "gyop_heullim_pyo_bottom": "image/sigimsae/gyop_heullim_pyo.png",
+                 "gyop_heullim_pyo": IMAGE_PATH + "/sigimsae/gyop_heullim_pyo.png",
+                 "gyop_heullim_pyo_bottom": IMAGE_PATH + "/sigimsae/gyop_heullim_pyo.png",
 
-                 "gyop_mineun_pyo": "image/sigimsae/gyop_mineun_pyo.png",
-                 "gyop_mineun_pyo_bottom": "image/sigimsae/gyop_mineun_pyo.png",
+                 "gyop_mineun_pyo": IMAGE_PATH + "/sigimsae/gyop_mineun_pyo.png",
+                 "gyop_mineun_pyo_bottom": IMAGE_PATH + "/sigimsae/gyop_mineun_pyo.png",
 
-                 "heullim_pyo1": "image/sigimsae/heullim_pyo1.png",
-                 "heullim_pyo1_bottom": "image/sigimsae/heullim_pyo1.png",
-                 "heullim_pyo2": "image/sigimsae/heullim_pyo2.png",
-                 "heullim_pyo2_bottom": "image/sigimsae/heullim_pyo2_bottom.png",
-                 "heullim_pyo3": "image/sigimsae/heullim_pyo3.png",
-                 "heullim_pyo3_bottom": "image/sigimsae/heullim_pyo3_bottom.png",
+                 "heullim_pyo1": IMAGE_PATH + "/sigimsae/heullim_pyo1.png",
+                 "heullim_pyo1_bottom": IMAGE_PATH + "/sigimsae/heullim_pyo1.png",
+                 "heullim_pyo2": IMAGE_PATH + "/sigimsae/heullim_pyo2.png",
+                 "heullim_pyo2_bottom": IMAGE_PATH + "/sigimsae/heullim_pyo2_bottom.png",
+                 "heullim_pyo3": IMAGE_PATH + "/sigimsae/heullim_pyo3.png",
+                 "heullim_pyo3_bottom": IMAGE_PATH + "/sigimsae/heullim_pyo3_bottom.png",
 
-                 "mineun_pyo1": "image/sigimsae/mineun_pyo1.png",
-                 "mineun_pyo1_bottom": "image/sigimsae/mineun_pyo1.png",
-                 "mineun_pyo2": "image/sigimsae/mineun_pyo2.png",
-                 "mineun_pyo2_bottom": "image/sigimsae/mineun_pyo2_bottom.png",
-                 "mineun_pyo3": "image/sigimsae/mineun_pyo3.png",
-                 "mineun_pyo3_bottom": "image/sigimsae/mineun_pyo3_bottom.png",
+                 "mineun_pyo1": IMAGE_PATH + "/sigimsae/mineun_pyo1.png",
+                 "mineun_pyo1_bottom": IMAGE_PATH + "/sigimsae/mineun_pyo1.png",
+                 "mineun_pyo2": IMAGE_PATH + "/sigimsae/mineun_pyo2.png",
+                 "mineun_pyo2_bottom": IMAGE_PATH + "/sigimsae/mineun_pyo2_bottom.png",
+                 "mineun_pyo3": IMAGE_PATH + "/sigimsae/mineun_pyo3.png",
+                 "mineun_pyo3_bottom": IMAGE_PATH + "/sigimsae/mineun_pyo3_bottom.png",
 
-                 "nongeum1": "image/sigimsae/nongeum1.png", "nongeum1_bottom": "image/sigimsae/nongeum1_bottom.png",
-                 "nongeum2": "image/sigimsae/nongeum2.png", "nongeum2_bottom": "image/sigimsae/nongeum2_bottom.png",
-                 "nongeum3": "image/sigimsae/nongeum3.png", "nongeum3_bottom": "image/sigimsae/nongeum3_bottom.png",
-                 "nongeum4": "image/sigimsae/nongeum4.png", "nongeum4_bottom": "image/sigimsae/nongeum4_bottom.png",
-                 "nongeum5": "image/sigimsae/nongeum5.png", "nongeum5_bottom": "image/sigimsae/nongeum5_bottom.png",
-                 "nongeum6": "image/sigimsae/nongeum6.png", "nongeum6_bottom": "image/sigimsae/nongeum6_bottom.png",
-                 "nongeum7": "image/sigimsae/nongeum7.png", "nongeum7_bottom": "image/sigimsae/nongeum7_bottom.png",
-                 "nongeum8": "image/sigimsae/nongeum8.png", "nongeum8_bottom": "image/sigimsae/nongeum8_bottom.png",
+                 "nongeum1": IMAGE_PATH + "/sigimsae/nongeum1.png", "nongeum1_bottom": IMAGE_PATH + "/sigimsae/nongeum1_bottom.png",
+                 "nongeum2": IMAGE_PATH + "/sigimsae/nongeum2.png", "nongeum2_bottom": IMAGE_PATH + "/sigimsae/nongeum2_bottom.png",
+                 "nongeum3": IMAGE_PATH + "/sigimsae/nongeum3.png", "nongeum3_bottom": IMAGE_PATH + "/sigimsae/nongeum3_bottom.png",
+                 "nongeum4": IMAGE_PATH + "/sigimsae/nongeum4.png", "nongeum4_bottom": IMAGE_PATH + "/sigimsae/nongeum4_bottom.png",
+                 "nongeum5": IMAGE_PATH + "/sigimsae/nongeum5.png", "nongeum5_bottom": IMAGE_PATH + "/sigimsae/nongeum5_bottom.png",
+                 "nongeum6": IMAGE_PATH + "/sigimsae/nongeum6.png", "nongeum6_bottom": IMAGE_PATH + "/sigimsae/nongeum6_bottom.png",
+                 "nongeum7": IMAGE_PATH + "/sigimsae/nongeum7.png", "nongeum7_bottom": IMAGE_PATH + "/sigimsae/nongeum7_bottom.png",
+                 "nongeum8": IMAGE_PATH + "/sigimsae/nongeum8.png", "nongeum8_bottom": IMAGE_PATH + "/sigimsae/nongeum8_bottom.png",
 
-                 "pureo_naerinuen_pyo": "image/sigimsae/pureo_naerinuen_pyo.png",
-                 "pureo_naerinuen_pyo_bottom": "image/sigimsae/pureo_naerinuen_pyo_bottom.png",
+                 "pureo_naerinuen_pyo": IMAGE_PATH + "/sigimsae/pureo_naerinuen_pyo.png",
+                 "pureo_naerinuen_pyo_bottom": IMAGE_PATH + "/sigimsae/pureo_naerinuen_pyo_bottom.png",
 
-                 "wiro_ddeoneun_pyo": "image/sigimsae/wiro_ddeoneun_pyo.png",
-                 "wiro_ddeoneun_pyo_bottom": "image/sigimsae/wiro_ddeoneun_pyo_bottom.png"}
+                 "wiro_ddeoneun_pyo": IMAGE_PATH + "/sigimsae/wiro_ddeoneun_pyo.png",
+                 "wiro_ddeoneun_pyo_bottom": IMAGE_PATH + "/sigimsae/wiro_ddeoneun_pyo_bottom.png"}
 
     ICON_PLACEMENT = [["araero_ddeoneun_pyo", "gyop_heullim_pyo", "gyop_mineun_pyo"],
 
@@ -559,7 +565,7 @@ class Sigimsae(QLabel):
     def set_style(self, obj: QLabel) -> None:
         global css_content
         if css_content is None:
-            with open("style.css", 'r') as f:
+            with open(CSS_FILE_PATH, 'r') as f:
                 css_content = f.read()
 
         obj.setStyleSheet(css_content)
@@ -773,7 +779,7 @@ class Gasaran(QHBoxLayout):
     def set_style(self) -> None:
         global css_content
         if css_content is None:
-            with open("style.css", 'r') as f:
+            with open(CSS_FILE_PATH, 'r') as f:
                 css_content = f.read()
 
         self.setStyleSheet(css_content)
@@ -942,8 +948,8 @@ class Gang(QGridLayout):  # Gasaran + Jeonggan * n
                 "first_top_left": (54, 8), "first_top_right": (35 - 8, 8),
                 "last_bottom_left": (54, 8), "last_bottom_right": (35 - 8, 8),
                 "last_bottom_right_id0": (35 - 8, 8)}
-        icon_path = {"sumpyo_up": "image/sumpyo2.png", "sumpyo_down": "image/sumpyo2_down.png",
-                     "sumpyo_up_for_first": "image/sumpyo2.png", "sumpyo_down_for_last": "image/sumpyo2_down.png",
+        icon_path = {"sumpyo_up": IMAGE_PATH + "/sumpyo2.png", "sumpyo_down": IMAGE_PATH + "/sumpyo2_down.png",
+                     "sumpyo_up_for_first": IMAGE_PATH + "/sumpyo2.png", "sumpyo_down_for_last": IMAGE_PATH + "/sumpyo2_down.png",
                      "first_top_left": None, "first_top_right": None,
                      "last_bottom_left": None, "last_bottom_right": None,
                      "last_bottom_right_id0": None}
@@ -1452,7 +1458,7 @@ class Kan(QLabel):
 
         for key in Kan.JANGSIKEUM:
             action = QAction(key, self)
-            action.setIcon(QIcon(f"image/jangsikeum/{key}.png"))
+            action.setIcon(QIcon(IMAGE_PATH + f"/jangsikeum/{key}.png"))
             action.triggered.connect(lambda _, l=key: self.set_jangsikeun(label_type=l))
             self.menu.addAction(action)
 
@@ -1465,7 +1471,7 @@ class Kan(QLabel):
     def set_style(self) -> None:
         global css_content
         if css_content is None:
-            with open("style.css", 'r') as f:
+            with open(CSS_FILE_PATH, 'r') as f:
                 css_content = f.read()
 
         font_size = 16
@@ -1538,7 +1544,7 @@ class Kan(QLabel):
 
     def input_by_keyboard(self, key: str, octave: int = 0):
         if Kan.key_mapping is None:
-            with open('key_mapping.json', 'r') as f:
+            with open(KEY_MAPPING_PATH, 'r') as f:
                 Kan.key_mapping = json.load(f)
 
         print("Key Pressed:", key)
@@ -1782,7 +1788,7 @@ class Kan(QLabel):
     def set_jangsikeun(self, label_type: str) -> None:
         self.clear()
         self.setText("")
-        self.setPixmap(QPixmap(f"image/jangsikeum/{label_type}.png"))
+        self.setPixmap(QPixmap(IMAGE_PATH + f"/jangsikeum/{label_type}.png"))
         self.key = label_type
         self.type = "jangsikeum"
         self.octave = 0

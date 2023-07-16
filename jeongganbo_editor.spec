@@ -8,7 +8,7 @@ a = Analysis(
     ['main.py', 'jeonggan.py', 'load_xml.py', 'pitch_etc_name.py', 'pitch_name.py', 'save_xml.py'],
     pathex=[],
     binaries=[],
-    datas=[('style.css', '.'), ('image', 'image')],
+    datas=[('style.css', '.'), ('key_mapping.json', '.'), ('image', 'image')],
     hiddenimports=['PyQt5.sip'],
     hookspath=[],
     hooksconfig={},

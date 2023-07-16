@@ -1,5 +1,6 @@
 import json
 import sys
+import os
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import QTimer, QCoreApplication, QTranslator
@@ -13,10 +14,16 @@ from load_xml import LoadJGBX
 from pitch_name import PitchName
 from save_xml import SaveJGBX
 
+base_dir = os.path.dirname(os.path.abspath(__file__))
+CSS_FILE_PATH = os.path.join(base_dir, 'style.css')
+KEY_MAPPING_PATH = os.path.join(base_dir, 'key_mapping.json')
+IMAGE_PATH = os.path.join(base_dir, 'image/')
+
 
 class MyApp(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
+
         self.set_style()
         self.statusBar = QStatusBar()
         self.setStatusBar(self.statusBar)
@@ -52,7 +59,7 @@ class MyApp(QMainWindow):
         self.init_ui()
 
     def set_style(self):
-        with open("style.css", 'r') as f:
+        with open(CSS_FILE_PATH, 'r') as f:
             self.setStyleSheet(f.read())
 
     def init_ui(self):
@@ -85,7 +92,7 @@ class MyApp(QMainWindow):
         self.toolbar = self.addToolBar('Tools')
 
         # new file
-        new_action = QAction(QIcon('image/new.svg'), 'New File', self)
+        new_action = QAction(QIcon(IMAGE_PATH + '/new.svg'), 'New File', self)
         new_action.setShortcut('Ctrl+N')
         new_action.setStatusTip('Make a the file')
         new_action.triggered.connect(self.new_file)
@@ -94,7 +101,7 @@ class MyApp(QMainWindow):
         self.toolbar.addAction(new_action)
 
         # open
-        open_action = QAction(QIcon('image/open.svg'), 'Open', self)
+        open_action = QAction(QIcon(IMAGE_PATH + '/open.svg'), 'Open', self)
         open_action.setShortcut('Ctrl+O')
         open_action.setStatusTip('Open the file')
         open_action.triggered.connect(self.load)
@@ -103,7 +110,7 @@ class MyApp(QMainWindow):
         self.toolbar.addAction(open_action)
 
         # save
-        save_action = QAction(QIcon('image/save.svg'), 'Save', self)
+        save_action = QAction(QIcon(IMAGE_PATH + '/save.svg'), 'Save', self)
         save_action.setShortcut('Ctrl+S')
         save_action.setStatusTip('Save the file')
         save_action.triggered.connect(self.save)
@@ -112,7 +119,7 @@ class MyApp(QMainWindow):
         self.toolbar.addAction(save_action)
 
         # save as
-        save_as_action = QAction(QIcon('image/save_as.svg'), 'Save as ...', self)
+        save_as_action = QAction(QIcon(IMAGE_PATH + '/save_as.svg'), 'Save as ...', self)
         save_as_action.setShortcut('Ctrl+Shift+S')
         save_as_action.setStatusTip('Save the file')
         save_as_action.triggered.connect(self.save_as)
@@ -120,7 +127,7 @@ class MyApp(QMainWindow):
         filemenu.addAction(save_as_action)
 
         # export
-        export_action = QAction(QIcon('image/export.svg'), 'Export', self)
+        export_action = QAction(QIcon(IMAGE_PATH + '/export.svg'), 'Export', self)
         export_action.setShortcut('Ctrl+E')
         export_action.setStatusTip('Export the file')
         export_action.triggered.connect(self.export_wait)
@@ -129,7 +136,7 @@ class MyApp(QMainWindow):
         self.toolbar.addAction(export_action)
 
         # exit
-        exit_action = QAction(QIcon('image/exit.svg'), 'Exit', self)
+        exit_action = QAction(QIcon(IMAGE_PATH + '/exit.svg'), 'Exit', self)
         exit_action.setShortcut('Ctrl+Q')
         exit_action.setStatusTip('Exit application')
         exit_action.triggered.connect(self.close)
@@ -138,7 +145,7 @@ class MyApp(QMainWindow):
         self.toolbar.addAction(exit_action)
 
         # about menu
-        about_menu_action = QAction(QIcon('image/new.svg'), 'About', self)
+        about_menu_action = QAction(QIcon(IMAGE_PATH + '/new.svg'), 'About', self)
         about_menu_action.triggered.connect(self.view_about)
 
         aboutmenu.addAction(about_menu_action)
@@ -191,9 +198,7 @@ class MyApp(QMainWindow):
         return self.pages_obj[self.curr_page - 1]
 
     def key_mapping(self):
-        key_mapping_file_path = "key_mapping.json"
-
-        with open(key_mapping_file_path, 'r') as f:
+        with open(KEY_MAPPING_PATH, 'r') as f:
             key_mapping = json.load(f)
 
         for key in PitchName.__members__.keys():
@@ -207,7 +212,7 @@ class MyApp(QMainWindow):
                         lambda k=shortcut: Kan.clicked_obj.input_by_keyboard(k, self.octave))
                     self.shortcuts[key].append(tmp_shortcut)
             except KeyError as e:
-                print(f"경고: {e}의 단축키가 {key_mapping_file_path}에 없습니다.", file=sys.stderr)
+                print(f"경고: {e}의 단축키가 {KEY_MAPPING_PATH}에 없습니다.", file=sys.stderr)
 
         for key in ["REST", "CONTINUOUS",
                     "MOVE_LEFT", "MOVE_RIGHT", "MOVE_UP", "MOVE_DOWN",
@@ -224,7 +229,7 @@ class MyApp(QMainWindow):
                         lambda k=shortcut: Kan.clicked_obj.input_by_keyboard(k))
                     self.shortcuts[key].append(tmp_shortcut)
             except KeyError as e:
-                print(f"경고: {e}의 단축키가 {key_mapping_file_path}에 없습니다.", file=sys.stderr)
+                print(f"경고: {e}의 단축키가 {KEY_MAPPING_PATH}에 없습니다.", file=sys.stderr)
 
         for key in ["OCTAVE_UP"]:
             self.shortcuts[key] = list()
@@ -237,7 +242,7 @@ class MyApp(QMainWindow):
                         lambda: self.set_octave(-2) if self.octave >= 2 else self.set_octave(self.octave + 1)
                     )
             except KeyError as e:
-                print(f"경고: {e}의 단축키가 {key_mapping_file_path}에 없습니다.", file=sys.stderr)
+                print(f"경고: {e}의 단축키가 {KEY_MAPPING_PATH}에 없습니다.", file=sys.stderr)
 
         for key in ["OCTAVE_DOWN"]:
             self.shortcuts[key] = list()
@@ -250,7 +255,7 @@ class MyApp(QMainWindow):
                         lambda: self.set_octave(2) if self.octave <= -2 else self.set_octave(self.octave - 1)
                     )
             except KeyError as e:
-                print(f"경고: {e}의 단축키가 {key_mapping_file_path}에 없습니다.", file=sys.stderr)
+                print(f"경고: {e}의 단축키가 {KEY_MAPPING_PATH}에 없습니다.", file=sys.stderr)
 
         for key in ["PREV_PAGE"]:
             self.shortcuts[key] = list()
@@ -261,7 +266,7 @@ class MyApp(QMainWindow):
                     tmp_shortcut = QShortcut(QKeySequence(shortcut), self)
                     tmp_shortcut.activated.connect(self.call_prev_page)
             except KeyError as e:
-                print(f"경고: {e}의 단축키가 {key_mapping_file_path}에 없습니다.", file=sys.stderr)
+                print(f"경고: {e}의 단축키가 {KEY_MAPPING_PATH}에 없습니다.", file=sys.stderr)
 
         for key in ["NEXT_PAGE"]:
             self.shortcuts[key] = list()
@@ -272,7 +277,7 @@ class MyApp(QMainWindow):
                     tmp_shortcut = QShortcut(QKeySequence(shortcut), self)
                     tmp_shortcut.activated.connect(self.call_next_page)
             except KeyError as e:
-                print(f"경고: {e}의 단축키가 {key_mapping_file_path}에 없습니다.", file=sys.stderr)
+                print(f"경고: {e}의 단축키가 {KEY_MAPPING_PATH}에 없습니다.", file=sys.stderr)
 
     def export_wait(self):
         tmp_clicked_obj = Kan.clicked_obj
@@ -533,7 +538,7 @@ class MyApp(QMainWindow):
         self.about_dialog.setLayout(dialog_layout)
 
         logo_label = QLabel()
-        logo_label.setPixmap(QPixmap("image/logo.png").scaled(50, 50))
+        logo_label.setPixmap(QPixmap(IMAGE_PATH + "/logo.png").scaled(50, 50))
         dialog_layout.addWidget(logo_label, 0, 0)
 
         title_label = QLabel()

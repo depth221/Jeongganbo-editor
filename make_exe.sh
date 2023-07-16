@@ -1,1 +1,1 @@
-pyinstaller --clean -w *.py -n jeongganbo_editor --hidden-import PyQt5.sip
+pyinstaller jeongganbo_editor.spec

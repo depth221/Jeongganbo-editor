@@ -1,2 +1,1 @@
 pyinstaller jeongganbo_editor.spec
-copy key_mapping.json dist\jeongganbo_editor\
