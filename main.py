@@ -547,7 +547,7 @@ class MyApp(QMainWindow):
         dialog_layout.addWidget(title_label, 0, 1)
 
         version_label = QLabel()
-        version_label.setText("v1.0, 2023-07-14")
+        version_label.setText("v1.1, 2023-07-17")
         dialog_layout.addWidget(version_label, 1, 1)
 
         author_label = QLabel()
