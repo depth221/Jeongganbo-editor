@@ -1733,11 +1733,14 @@ class Kan(QLabel):
     def find_value_by_key(key: str, octave: int = 0) -> str:
         dict_pitchname = PitchName.__members__.items()
         dict_etc_note = PitchEtcName.__members__.items()
-        list_all_note = list(dict_pitchname) + list(dict_etc_note)
 
         note = None
 
-        for pitchname_key, pitchname_member in list_all_note:
+        for pitchname_key, pitchname_member in dict_etc_note:
+            if key == pitchname_key:
+                return pitchname_member.value
+
+        for pitchname_key, pitchname_member in dict_pitchname:
             if key == pitchname_key:
                 if octave == 0:
                     note = pitchname_member.value
