@@ -38,8 +38,9 @@ class LoadJGBX:
                 if gak_num == 0:
                     for gang_iter in gak_iter:
                         if gang_num == 0:
-                            for _ in gang_iter:
-                                jeonggan_num += 1
+                            for jeonggan_item in gang_iter:
+                                if jeonggan_item.tag == "jeonggan":
+                                    jeonggan_num += 1
                         gang_num += 1
                 gak_num += 1
 
