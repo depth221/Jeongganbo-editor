@@ -81,6 +81,9 @@ Save a Jeongganbo project file (.jgbx) with `Ctrl+S` (not an image file!). You c
 ### Export
 You can export sheets as an image (.png) file with `Ctrl+E`. Each page will be saved as one image file.
 
+## Sheet examples
+Example files for the jeongganbo sheet are located in the [example](https://github.com/depth221/Jeongganbo-editor/tree/main/example) folder.
+
 ## installing oneself
 ### Dependencies
 * Python 3.10

@@ -82,6 +82,9 @@
 ### 내보내기
 `Ctrl+E`로 정간보를 이미지(.png) 파일로 내보낼 수 있습니다. 각 페이지마다 한 장의 이미지 파일로 저장됩니다.
 
+## 악보 예시
+정간보 예시 파일은 [example](https://github.com/depth221/Jeongganbo-editor/tree/main/example) 폴더에 있습니다.
+
 ## 직접 설치
 ### 의존성
 * Python 3.10
