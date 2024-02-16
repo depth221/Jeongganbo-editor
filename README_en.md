@@ -104,7 +104,7 @@ The executable file is located in the `dist\jeongganbo_editor` folder.
 ### Mac
 ※ Recently macOS versions have pip3 installed by default. If pip3 is not installed, please install Python for macOS on [official Python website](https://www.python.org/downloads/macos/).
 ```bash
-pip install -r requirement.txt
+pip3 install -r requirement.txt
 ./make_exe.sh
 ```
 
