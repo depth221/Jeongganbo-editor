@@ -1,1 +1,2 @@
-tar -zcvf jeongganbo_editor_linux.tar.gz dist/jeongganbo_editor/
+cd dist
+tar -zcvf ../jeongganbo_editor_linux_x64.tar.gz jeongganbo_editor
