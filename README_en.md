@@ -1,5 +1,5 @@
 # Jeongganbo (정간보) Editor ([Korean version](https://github.com/depth221/Jeongganbo-editor/blob/main/README.md))
-<img src="https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/image/README/app.png" alt="Executed Image" width="500">
+<img src="https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/README_images/app.png" alt="Executed Image" width="500">
  
  ## Download
 [https://github.com/depth221/Jeongganbo-editor/releases/](https://github.com/depth221/Jeongganbo-editor/releases/)
@@ -21,11 +21,11 @@ There are many shortcomings compared to existing Jeongganbo composing programs, 
 
 ## How to use
 ### Create a new Jeongganbo page
-![Create a new Jeongganbo page](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/image/README/new_page.png)    
+![Create a new Jeongganbo page](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/README_images/new_page.png)    
 You can press `Ctrl+N` to create a new sheet, where you can set the 'gak to be on one page', 'gang to be on one gak', and 'jeonggan to be on one gang', but you can't change these settings after creating the sheet.
 
 ### Enter notes and rests
-![Korean traditional music pitch](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/image/README/notes.png)    
+![Korean traditional music pitch](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/README_images/notes.png)    
 Each note is assigned to keys 1-5, and pressing a number key with the Ctrl key enters one higher note, and pressing it with the Alt key enters one lower note. 
 
 `1`: Hwangjong (황종, **黃**鐘)    
@@ -53,22 +53,22 @@ Right-clicking in the clicked space will bring up a list of grace notes, where y
 ### Insert a new space
 If you enter a series of notes, the slots will automatically adjust to fit 1-6 beats. If you want the notes to look a certain way, you can set the shape of the cells yourself, as shown below.
 
-![A new column created to the right of the current column](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/image/README/kan_right.png)    
+![A new column created to the right of the current column](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/README_images/kan_right.png)    
 Pressing `Ctrl+→` creates a new cell to the right of the currently clicked cell.
 
-![A new column created below the current column](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/image/README/kan_down.png)    
+![A new column created below the current column](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/README_images/kan_down.png)    
 Pressing `Ctrl+space` creates a new space below the currently clicked space.
 
 ### Enter a breathing mark
-![breathing mark typed](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/image/README/sumpyo.png)    
+![breathing mark typed](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/README_images/sumpyo.png)    
 Clicking on the left part of the empty space to the right of the space will enter a breathing mark. Press it again to make it disappear.
 
 ### Enter a sigimsae
-![sigimsae typed](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/image/README/sigimsae.png)    
+![sigimsae typed](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/README_images/sigimsae.png)    
 Clicking on the right part of the empty space to the right of the gutter will bring up a window for entering sigimsaes. This is where you can enter the desired sigimsae. Pressing the buttons consecutively will enter sigimsaes continuously.
 
 ### Edit title-subtitle and author
-![Title-Subtitle and Author edit fields](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/image/README/title_edit.png)    
+![Title-Subtitle and Author edit fields](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/README_images/title_edit.png)    
 You can edit the title and author as shown above by clicking on the title and subtitle section on the right side of the page.
 
 ### Turning pages

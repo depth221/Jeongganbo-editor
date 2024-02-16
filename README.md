@@ -1,5 +1,5 @@
 # 정간보 편집기 ([English version](https://github.com/depth221/Jeongganbo-editor/blob/main/README_en.md))
-<img src="https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/image/README/app.png" alt="실행 이미지" width="500">
+<img src="https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/README_images/app.png" alt="실행 이미지" width="500">
  
  ## 다운로드
 [https://github.com/depth221/Jeongganbo-editor/releases/](https://github.com/depth221/Jeongganbo-editor/releases/)
@@ -21,12 +21,12 @@
 
 ## 사용법
 ### 새로운 정간보 쪽 만들기
-![새로운 정간보 쪽 만들기](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/image/README/new_page.png)    
+![새로운 정간보 쪽 만들기](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/README_images/new_page.png)    
 `Ctrl+N`으로 정간보 쪽 양식을 새롭게 만들 수 있습니다.
 여기에서 '한 페이지에 들어갈 각', '한 각에 들어갈 강', '한 강에 들어갈 정간'을 설정할 수 있으며, 현재로서는 정간보 작성 중 이 설정을 바꿀 수 없습니다.
 
 ### 음표 및 쉼표 입력
-![국악 음률](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/image/README/notes.png)    
+![국악 음률](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/README_images/notes.png)    
 각 음은 1~5번 키에 할당되어 있고, 숫자 키를 Ctrl 키와 함께 누르면 하나 높은 음이, Alt 키와 함께 누르면 하나 낮은 음이 입력됩니다. 
 
 `1`: 황종(黃)    
@@ -54,22 +54,22 @@
 ### 새로운 칸 넣기
 연속해서 음표를 입력하면 1박~6박에 맞게 칸이 자동으로 조절됩니다. 만약 원하는 형태로 음표를 넣고 싶다면 아래와 같이 직접 칸의 모양을 설정할 수 있습니다.
 
-![현재 칸 오른쪽에 새로운 칸을 만든 모습](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/image/README/kan_right.png)    
+![현재 칸 오른쪽에 새로운 칸을 만든 모습](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/README_images/kan_right.png)    
 `Ctrl+→` 키를 누르면 현재 클릭된 칸 오른쪽에 새로운 칸을 만듭니다.
 
-![현재 칸 아래쪽에 새로운 칸을 만든 모습](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/image/README/kan_down.png)    
+![현재 칸 아래쪽에 새로운 칸을 만든 모습](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/README_images/kan_down.png)    
 `Ctrl+space` 키를 누르면 현재 클릭된 칸 아래쪽에 새로운 칸을 만듭니다.
 
 ### 숨표 입력
-![숨표를 입력한 모습](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/image/README/sumpyo.png)    
+![숨표를 입력한 모습](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/README_images/sumpyo.png)    
 정간 오른쪽 빈 공간의 왼쪽 부분을 클릭하면 숨표가 입력됩니다. 한 번 더 누르면 없어집니다.
 
 ### 시김새 입력
-![시김새를 입력한 모습](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/image/README/sigimsae.png)    
+![시김새를 입력한 모습](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/README_images/sigimsae.png)    
 정간 오른쪽 빈 공간의 오른쪽 부분을 클릭하면 시김새를 입력하는 창이 뜹니다. 여기서 원하는 시김새를 입력할 수 있습니다. 버튼을 연속해서 누르면 시김새가 주르륵 입력됩니다.
 
 ### 제목-소제목 및 작가 수정
-![제목-소제목 및 작가 수정란](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/image/README/title_edit.png)    
+![제목-소제목 및 작가 수정란](https://raw.githubusercontent.com/depth221/Jeongganbo-editor/main/README_images/title_edit.png)    
 페이지 오른쪽의 제목 및 소제목 부분을 클릭하면 위와 같이 제목 및 작가를 수정할 수 있습니다.
 
 ### 페이지 넘기기
