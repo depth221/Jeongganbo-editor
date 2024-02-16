@@ -5,7 +5,7 @@ with open("README.md", "r") as readme:
 
 setuptools.setup(
     name="jgb-editor",
-    version="1.1.1",
+    version="1.1.2",
     author="Hwang Dongha",
     author_email="depth221@gmail.com",
     description="간단한 정간보 편집기 / a simple Jeongganbo editor",

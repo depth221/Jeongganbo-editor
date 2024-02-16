@@ -2,7 +2,7 @@ import xml.etree.ElementTree as ET
 
 from PyQt5.QtWidgets import QMainWindow, QGridLayout
 
-from jeonggan import Page, TopPart, TitlePart, Gasaran, Gak, Gang, Jeonggan, Kan, Sumpyo, Sigimsae
+from jgb_editor.jeonggan import Page, TopPart, TitlePart, Gasaran, Gak, Gang, Jeonggan, Kan, Sumpyo, Sigimsae
 
 
 class LoadJGBX:

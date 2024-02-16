@@ -4,7 +4,8 @@
  ## Download
 [https://github.com/depth221/Jeongganbo-editor/releases/](https://github.com/depth221/Jeongganbo-editor/releases/)
 
-※ To use on macOS, download the **Linux executable**.
+※ On macOS and Linux, you can install this editor via `pip install jgb-editor`.     
+※ To create an executable file in macOS, refer to the 'install yourself' below.
 
 ## Introduction
 So far, there are two Jeongganbo editors: [**Jeongganbo Mania**](https://blog.naver.com/jgb_mania/40041295964), which was released jointly by the Mogence Lab, Chonnam National University, and Dankook University in 2007, and Jeongganbo Project, which was created by an individual developer around 2011.
@@ -84,7 +85,7 @@ You can export sheets as an image (.png) file with `Ctrl+E`. Each page will be s
 ## Sheet examples
 Example files for the jeongganbo sheet are located in the [example](https://github.com/depth221/Jeongganbo-editor/tree/main/example) folder.
 
-## installing oneself
+## install yourself
 ### Dependencies
 * Python 3.10
 * PyQt5

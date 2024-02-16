@@ -9,8 +9,8 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QToolTip, QStatu
 from PyQt5.QtGui import QFont, QIcon, QColor, QPalette, QFontMetrics, QPainter, QTextOption, QPixmap
 from PyQt5 import QtCore
 
-from pitch_name import PitchName, PitchNamePlus1, PitchNamePlus2, PitchNameMinus1, PitchNameMinus2
-from pitch_etc_name import PitchEtcName
+from jgb_editor.pitch_name import PitchName, PitchNamePlus1, PitchNamePlus2, PitchNameMinus1, PitchNameMinus2
+from jgb_editor.pitch_etc_name import PitchEtcName
 
 css_content = None
 

@@ -1,2 +1,2 @@
-rmdir build dist
+rmdir dist
 pyinstaller jeongganbo_editor.spec

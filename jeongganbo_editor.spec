@@ -5,10 +5,10 @@ block_cipher = None
 
 
 a = Analysis(
-    ['jgb_editor/jeonggan.py', 'jgb_editor/load_xml.py', 'jgb_editor/main.py', 'jgb_editor/pitch_etc_name.py', 'jgb_editor/pitch_name.py', 'jgb_editor/save_xml.py'],
+    ['jgb_editor/__main__.py', 'jgb_editor/jeonggan.py', 'jgb_editor/load_xml.py', 'jgb_editor/main.py', 'jgb_editor/pitch_etc_name.py', 'jgb_editor/pitch_name.py', 'jgb_editor/save_xml.py'],
     pathex=['jgb_editor'],
     binaries=[],
-    datas=[('jgb_editor/style.css', '.'), ('jgb_editor/key_mapping.json', '.'), ('jgb_editor/image', 'image')],
+    datas=[('jgb_editor/style.css', 'jgb_editor'), ('jgb_editor/key_mapping.json', 'jgb_editor'), ('jgb_editor/image', 'jgb_editor/image')],
     hiddenimports=['PyQt5.sip'],
     hookspath=[],
     hooksconfig={},

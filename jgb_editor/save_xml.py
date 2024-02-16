@@ -1,6 +1,6 @@
 from xml.etree.ElementTree import Element, SubElement, ElementTree
 
-from jeonggan import Page, TopPart, TitlePart, Gasaran, Gak, Gang, Jeonggan, Kan, Sumpyo, Sigimsae
+from jgb_editor.jeonggan import Page, TopPart, TitlePart, Gasaran, Gak, Gang, Jeonggan, Kan, Sumpyo, Sigimsae
 
 
 class SaveJGBX:

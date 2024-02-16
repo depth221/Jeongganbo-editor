@@ -9,10 +9,10 @@ from PyQt5.QtWidgets import QPushButton, QStatusBar, QMainWindow, \
     QApplication, QAction, QDesktopWidget, QShortcut, QDialog, QStackedWidget, QVBoxLayout, \
     QScrollArea, QFileDialog, QMessageBox, QHBoxLayout, QLineEdit, QFormLayout, QGridLayout, QLabel
 
-from jeonggan import Page, Kan
-from load_xml import LoadJGBX
-from pitch_name import PitchName
-from save_xml import SaveJGBX
+from jgb_editor.jeonggan import Page, Kan
+from jgb_editor.load_xml import LoadJGBX
+from jgb_editor.pitch_name import PitchName
+from jgb_editor.save_xml import SaveJGBX
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 CSS_FILE_PATH = os.path.join(base_dir, 'style.css')
@@ -547,7 +547,7 @@ class MyApp(QMainWindow):
         dialog_layout.addWidget(title_label, 0, 1)
 
         version_label = QLabel()
-        version_label.setText("v1.1, 2023-07-17")
+        version_label.setText("v1.1.2, 2024-02-17")
         dialog_layout.addWidget(version_label, 1, 1)
 
         author_label = QLabel()
