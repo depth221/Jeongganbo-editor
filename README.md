@@ -100,7 +100,7 @@ pip install -r requirement.txt
 .\make_exe.cmd
 ```
 
-실행 파일은 `dist\jeongganbo_editor` 폴더에 있습니다.
+실행 파일은 `dist` 폴더에 있습니다.
 
 
 ### 맥
