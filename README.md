@@ -104,10 +104,9 @@ pip install -r requirement.txt
 
 
 ### 맥
-※ homebrew를 먼저 설치해야 합니다!
+※ 기본적으로 최근 macOS에는 pip3가 기본적으로 설치되어 있습니다. 만약 pip3가 설치되어 있지 않다면 [파이썬 공식 웹 사이트](https://www.python.org/downloads/macos/)에서 macOS용 파이썬을 설치해 주세요.
 ```bash
-sudo easy_install pip
-pip install -r requirement.txt
+pip3 install -r requirement.txt
 ./make_exe.sh
 ```
 
