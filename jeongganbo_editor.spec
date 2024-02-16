@@ -5,10 +5,10 @@ block_cipher = None
 
 
 a = Analysis(
-    ['main.py', 'jeonggan.py', 'load_xml.py', 'pitch_etc_name.py', 'pitch_name.py', 'save_xml.py'],
-    pathex=[],
+    ['jgb_editor/jeonggan.py', 'jgb_editor/load_xml.py', 'jgb_editor/main.py', 'jgb_editor/pitch_etc_name.py', 'jgb_editor/pitch_name.py', 'jgb_editor/save_xml.py'],
+    pathex=['jgb_editor'],
     binaries=[],
-    datas=[('style.css', '.'), ('key_mapping.json', '.'), ('image', 'image')],
+    datas=[('jgb_editor/style.css', '.'), ('jgb_editor/key_mapping.json', '.'), ('jgb_editor/image', 'image')],
     hiddenimports=['PyQt5.sip'],
     hookspath=[],
     hooksconfig={},
@@ -24,28 +24,22 @@ pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 exe = EXE(
     pyz,
     a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
     [],
-    exclude_binaries=True,
     name='jeongganbo_editor',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
+    upx_exclude=[],
+    runtime_tmpdir=None,
     console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['image/logo.ico'],
-)
-coll = COLLECT(
-    exe,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
-    strip=False,
-    upx=True,
-    upx_exclude=[],
-    name='jeongganbo_editor',
+    icon='jgb_editor/image/logo.ico',
 )

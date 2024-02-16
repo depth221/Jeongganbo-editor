@@ -556,11 +556,14 @@ class MyApp(QMainWindow):
 
         self.about_dialog.show()
 
-
-if __name__ == '__main__':
+def main():
     app = QApplication(sys.argv)
     i18n = QTranslator()
     i18n.load("i18n/ko.qm")
     app.installTranslator(i18n)
     ex = MyApp()
-    sys.exit(app.exec_())
+    app.exec_()
+
+# for pyinstaller
+if __name__ == '__main__':
+    sys.exit(main())

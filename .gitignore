@@ -3,3 +3,4 @@ build/
 *.7z
 *.zip
 *.tar.gz
+__pycache__/
